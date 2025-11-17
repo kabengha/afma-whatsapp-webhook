@@ -97,13 +97,7 @@ def store_in_memory(phone, msg_type, text=None, doc_url=None, timestamp=None):
     print(f"[STORE] Total messages pour {phone}: {len(MESSAGE_STORE[phone])}")
 
 
-def get_case_for_phone(
-    session,
-    phone: str,
-    nom: str | None,
-    entreprise: str | None,
-    received_at: str,
-) -> str:
+def get_case_for_phone(session, phone: str, nom: str | None, received_at: str) -> str:
     """
     Retourne l'ID du Case à utiliser pour ce numéro.
 
@@ -123,12 +117,7 @@ def get_case_for_phone(
 
     # Sinon, on crée un nouveau Case dans Salesforce
     print(f"[CASE] Création d'un nouveau Case pour {phone} (active_window={active}, cached={bool(cached)})")
-    case_id = create_case(
-        session,
-        phone=phone,
-        nom=nom,
-        entreprise=entreprise,   # ✅ on transmet l'entreprise
-    )
+    case_id = create_case(session, phone=phone, nom=nom)
 
     # On met à jour le cache
     CASE_STORE[phone] = {
@@ -210,55 +199,9 @@ def download_file(url: str, suggested_filename: str | None = None) -> tuple[byte
         return None, ""
 
 
-def fetch_person_from_infobip_people(phone: str) -> tuple[str | None, str | None]:
-    """
-    Va chercher le profil People Infobip à partir du téléphone
-    et retourne (full_name, NomDeLentreprise__c).
-    """
-    if not phone:
-        return None, None
-
-    url = f"{INFOBIP_BASE_URL}/people/1/persons"
-    headers = {
-        "Authorization": f"App {INFOBIP_API_KEY}",
-        "Accept": "application/json",
-    }
-    params = {
-        "phone": phone,  # numéro tel exactement comme stocké dans People
-    }
-
-    try:
-        resp = requests.get(url, headers=headers, params=params, timeout=10)
-        resp.raise_for_status()
-    except Exception as e:
-        print(f"[INFOBIP][PEOPLE] Erreur lors de la récupération du profil People pour {phone}: {e}")
-        return None, None
-
-    data = resp.json() or {}
-    results = data.get("results") or data.get("persons") or []
-
-    if not results:
-        print(f"[INFOBIP][PEOPLE] Aucun profil People trouvé pour {phone}")
-        return None, None
-
-    person = results[0]
-
-    # Suivant la structure, à adapter si besoin :
-    attributes = person.get("attributes", {}) or {}
-    # Tu as un custom attribute 'full_name' dans ta capture
-    full_name = attributes.get("full_name") or person.get("name")
-    entreprise = attributes.get("NomDeLentreprise__c")
-
-    print(f"[INFOBIP][PEOPLE] Profil trouvé pour {phone} - full_name={full_name}, NomDeLentreprise__c={entreprise}")
-
-    return full_name, entreprise
-
-
-
 # ============================
 #  Webhook Infobip
 # ============================
-
 
 @app.route("/webhook/infobip", methods=["GET", "POST"])
 def infobip_webhook():
@@ -283,29 +226,7 @@ def infobip_webhook():
         phone = msg.get("from") or msg.get("sender")
         received_at = msg.get("receivedAt")
         contact = msg.get("contact", {}) or {}
-
-        # 1) Récupérer full_name et NomDeLentreprise__c depuis Infobip People
-        full_name, entreprise_from_people = fetch_person_from_infobip_people(phone)
-
-        # 2) Nom à utiliser pour Salesforce :
-        #    priorité au full_name People, sinon fallback sur le name du contact WhatsApp
-        contact_name = full_name or contact.get("name")
-
-        # 3) Entreprise à utiliser :
-        #    priorité à People, on garde quand même l'ancienne logique en secours
-        entreprise_name = (
-            entreprise_from_people
-            or contact.get("NomDeLentreprise__c")
-            or contact.get("fields", {}).get("NomDeLentreprise__c")
-            or contact.get("attributes", {}).get("NomDeLentreprise__c")
-        )
-
-        if entreprise_name:
-            print(f"[INFOBIP] Attribut NomDeLentreprise__c utilisé : {entreprise_name}")
-        else:
-            print("[INFOBIP] Aucun champ NomDeLentreprise__c disponible pour ce contact")
-
-        print(f"[INFOBIP] Nom (full_name ou fallback) utilisé : {contact_name}")
+        contact_name = contact.get("name")
 
         message_obj = msg.get("message", {}) or {}
         msg_type = message_obj.get("type")
@@ -366,7 +287,6 @@ def infobip_webhook():
                 session=sf_session,
                 phone=phone,
                 nom=contact_name,
-                entreprise=entreprise_name,
                 received_at=received_at,
             )
 
@@ -386,13 +306,13 @@ def infobip_webhook():
                 else:
                     print(f"[SF] Aucun fichier téléchargé pour {doc_url}, upload ignoré.")
 
+
         except SalesforceError as e:
             print(f"[SF][ERROR] Erreur Salesforce: {e}")
         except Exception as e:
             print(f"[SF][ERROR] Exception inattendue: {e}")
 
     return jsonify({"status": "ok"}), 200
-
 
 
 if __name__ == "__main__":
