@@ -66,7 +66,7 @@ def _headers(session: dict) -> dict:
     }
 
 
-def create_case(session: dict, phone: str, nom: str | None = None, entreprise: str | None = None) -> str:
+def create_case(session: dict, phone: str, nom: str | None = None) -> str:
     """
     Crée un Case dans Salesforce.
     Retourne le CaseId.
@@ -78,17 +78,9 @@ def create_case(session: dict, phone: str, nom: str | None = None, entreprise: s
         "Nom__c": nom or "",
         "Origin": "Whatsapp",
         "Status": "Nouvelle demande",
-        "RecordTypeId": SF_CASE_RECORD_TYPE_ID,   # vient de l'ENV
+        "RecordTypeId": SF_CASE_RECORD_TYPE_ID,
         "Telephone__c": phone,
-
-        # ✅ Champs statiques demandés
-        "TypeDeDeclaration__c": "Complément d'information",
-        "Type": "Déclaration Maladie",
     }
-
-    # ✅ On ne remplit NomDeLentreprise__c que si on a une valeur
-    if entreprise:
-        payload["NomDeLentreprise__c"] = entreprise
 
     resp = requests.post(url, headers=headers, json=payload, timeout=10)
     try:
@@ -102,7 +94,6 @@ def create_case(session: dict, phone: str, nom: str | None = None, entreprise: s
         raise SalesforceError(f"Réponse create_case sans id: {data}")
 
     return case_id
-
 
 
 def create_content_version(session: dict, file_bytes: bytes, filename: str, title: str | None = None) -> tuple[str, str]:
