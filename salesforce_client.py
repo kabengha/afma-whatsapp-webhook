@@ -77,6 +77,8 @@ def create_case(session: dict, phone: str, nom: str | None = None) -> str:
     payload = {
         "Nom__c": nom or "",
         "Origin": "Whatsapp",
+        "TypeDeDeclaration__c": "Complément d'information",
+        "Type": "Déclaration Maladie",
         "Status": "Nouvelle demande",
         "RecordTypeId": SF_CASE_RECORD_TYPE_ID,
         "Telephone__c": phone,
