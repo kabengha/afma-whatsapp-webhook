@@ -244,7 +244,10 @@ def infobip_webhook():
             or contact.get("fields", {}).get("NomDeLentreprise__c")
             or contact.get("attributes", {}).get("NomDeLentreprise__c")
         )
-
+        if entreprise_name:
+            print(f"[INFOBIP] Attribut NomDeLentreprise__c trouvé : {entreprise_name}")
+        else:
+            print("[INFOBIP] Aucun champ NomDeLentreprise__c reçu pour ce contact")
         print(f"[INFOBIP] NomDeLentreprise__c reçu : {entreprise_name}")
 
         message_obj = msg.get("message", {}) or {}
