@@ -259,6 +259,7 @@ def fetch_person_from_infobip_people(phone: str) -> tuple[str | None, str | None
 #  Webhook Infobip
 # ============================
 
+
 @app.route("/webhook/infobip", methods=["GET", "POST"])
 def infobip_webhook():
     if request.method == "GET":
@@ -278,7 +279,7 @@ def infobip_webhook():
     sf_session = None
 
     # Traiter chaque message
-        for msg in results:
+    for msg in results:
         phone = msg.get("from") or msg.get("sender")
         received_at = msg.get("receivedAt")
         contact = msg.get("contact", {}) or {}
@@ -291,7 +292,7 @@ def infobip_webhook():
         contact_name = full_name or contact.get("name")
 
         # 3) Entreprise à utiliser :
-        #    priorité à People, on garde quand même ton ancienne logique en secours
+        #    priorité à People, on garde quand même l'ancienne logique en secours
         entreprise_name = (
             entreprise_from_people
             or contact.get("NomDeLentreprise__c")
@@ -305,7 +306,6 @@ def infobip_webhook():
             print("[INFOBIP] Aucun champ NomDeLentreprise__c disponible pour ce contact")
 
         print(f"[INFOBIP] Nom (full_name ou fallback) utilisé : {contact_name}")
-
 
         message_obj = msg.get("message", {}) or {}
         msg_type = message_obj.get("type")
@@ -386,13 +386,13 @@ def infobip_webhook():
                 else:
                     print(f"[SF] Aucun fichier téléchargé pour {doc_url}, upload ignoré.")
 
-
         except SalesforceError as e:
             print(f"[SF][ERROR] Erreur Salesforce: {e}")
         except Exception as e:
             print(f"[SF][ERROR] Exception inattendue: {e}")
 
     return jsonify({"status": "ok"}), 200
+
 
 
 if __name__ == "__main__":
