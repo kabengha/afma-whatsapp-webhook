@@ -97,7 +97,13 @@ def store_in_memory(phone, msg_type, text=None, doc_url=None, timestamp=None):
     print(f"[STORE] Total messages pour {phone}: {len(MESSAGE_STORE[phone])}")
 
 
-def get_case_for_phone(session, phone: str, nom: str | None, received_at: str) -> str:
+def get_case_for_phone(
+    session,
+    phone: str,
+    nom: str | None,
+    entreprise: str | None,
+    received_at: str,
+) -> str:
     """
     Retourne l'ID du Case à utiliser pour ce numéro.
 
@@ -117,7 +123,12 @@ def get_case_for_phone(session, phone: str, nom: str | None, received_at: str) -
 
     # Sinon, on crée un nouveau Case dans Salesforce
     print(f"[CASE] Création d'un nouveau Case pour {phone} (active_window={active}, cached={bool(cached)})")
-    case_id = create_case(session, phone=phone, nom=nom)
+    case_id = create_case(
+        session,
+        phone=phone,
+        nom=nom,
+        entreprise=entreprise,   # ✅ on transmet l'entreprise
+    )
 
     # On met à jour le cache
     CASE_STORE[phone] = {
@@ -227,6 +238,14 @@ def infobip_webhook():
         received_at = msg.get("receivedAt")
         contact = msg.get("contact", {}) or {}
         contact_name = contact.get("name")
+        #  récupération de l'entreprise depuis Infobip People
+        entreprise_name = (
+            contact.get("NomDeLentreprise__c")
+            or contact.get("fields", {}).get("NomDeLentreprise__c")
+            or contact.get("attributes", {}).get("NomDeLentreprise__c")
+        )
+
+        print(f"[INFOBIP] NomDeLentreprise__c reçu : {entreprise_name}")
 
         message_obj = msg.get("message", {}) or {}
         msg_type = message_obj.get("type")
@@ -287,6 +306,7 @@ def infobip_webhook():
                 session=sf_session,
                 phone=phone,
                 nom=contact_name,
+                entreprise=entreprise_name,
                 received_at=received_at,
             )
 
