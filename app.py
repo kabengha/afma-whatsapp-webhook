@@ -210,6 +210,51 @@ def download_file(url: str, suggested_filename: str | None = None) -> tuple[byte
         return None, ""
 
 
+def fetch_person_from_infobip_people(phone: str) -> tuple[str | None, str | None]:
+    """
+    Va chercher le profil People Infobip à partir du téléphone
+    et retourne (full_name, NomDeLentreprise__c).
+    """
+    if not phone:
+        return None, None
+
+    url = f"{INFOBIP_BASE_URL}/people/1/persons"
+    headers = {
+        "Authorization": f"App {INFOBIP_API_KEY}",
+        "Accept": "application/json",
+    }
+    params = {
+        "phone": phone,  # numéro tel exactement comme stocké dans People
+    }
+
+    try:
+        resp = requests.get(url, headers=headers, params=params, timeout=10)
+        resp.raise_for_status()
+    except Exception as e:
+        print(f"[INFOBIP][PEOPLE] Erreur lors de la récupération du profil People pour {phone}: {e}")
+        return None, None
+
+    data = resp.json() or {}
+    results = data.get("results") or data.get("persons") or []
+
+    if not results:
+        print(f"[INFOBIP][PEOPLE] Aucun profil People trouvé pour {phone}")
+        return None, None
+
+    person = results[0]
+
+    # Suivant la structure, à adapter si besoin :
+    attributes = person.get("attributes", {}) or {}
+    # Tu as un custom attribute 'full_name' dans ta capture
+    full_name = attributes.get("full_name") or person.get("name")
+    entreprise = attributes.get("NomDeLentreprise__c")
+
+    print(f"[INFOBIP][PEOPLE] Profil trouvé pour {phone} - full_name={full_name}, NomDeLentreprise__c={entreprise}")
+
+    return full_name, entreprise
+
+
+
 # ============================
 #  Webhook Infobip
 # ============================
@@ -233,22 +278,34 @@ def infobip_webhook():
     sf_session = None
 
     # Traiter chaque message
-    for msg in results:
+        for msg in results:
         phone = msg.get("from") or msg.get("sender")
         received_at = msg.get("receivedAt")
         contact = msg.get("contact", {}) or {}
-        contact_name = contact.get("name")
-        #  récupération de l'entreprise depuis Infobip People
+
+        # 1) Récupérer full_name et NomDeLentreprise__c depuis Infobip People
+        full_name, entreprise_from_people = fetch_person_from_infobip_people(phone)
+
+        # 2) Nom à utiliser pour Salesforce :
+        #    priorité au full_name People, sinon fallback sur le name du contact WhatsApp
+        contact_name = full_name or contact.get("name")
+
+        # 3) Entreprise à utiliser :
+        #    priorité à People, on garde quand même ton ancienne logique en secours
         entreprise_name = (
-            contact.get("NomDeLentreprise__c")
+            entreprise_from_people
+            or contact.get("NomDeLentreprise__c")
             or contact.get("fields", {}).get("NomDeLentreprise__c")
             or contact.get("attributes", {}).get("NomDeLentreprise__c")
         )
+
         if entreprise_name:
-            print(f"[INFOBIP] Attribut NomDeLentreprise__c trouvé : {entreprise_name}")
+            print(f"[INFOBIP] Attribut NomDeLentreprise__c utilisé : {entreprise_name}")
         else:
-            print("[INFOBIP] Aucun champ NomDeLentreprise__c reçu pour ce contact")
-        print(f"[INFOBIP] NomDeLentreprise__c reçu : {entreprise_name}")
+            print("[INFOBIP] Aucun champ NomDeLentreprise__c disponible pour ce contact")
+
+        print(f"[INFOBIP] Nom (full_name ou fallback) utilisé : {contact_name}")
+
 
         message_obj = msg.get("message", {}) or {}
         msg_type = message_obj.get("type")
