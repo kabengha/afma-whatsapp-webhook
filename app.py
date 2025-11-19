@@ -313,8 +313,11 @@ def send_ack_message(phone: str):
         "to": phone,
         "content": {
             "text": (
-                "Nous avons bien reçu votre document, merci. "
-                "Votre dossier est en cours de traitement."
+                "Bonjour,\n\n"
+                "Nous vous remercions pour l’envoi de votre complément de dossier.\n"
+                "Votre document a bien été reçu et sera traité dans les plus brefs délais.\n\n"
+                "Vous pouvez suivre le traitement de votre dossier via l’application mobile ou le portail Web.\n\n"
+                "Cordialement."
             )
         }
     }
