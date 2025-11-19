@@ -292,7 +292,6 @@ def download_file(url: str, suggested_filename: str | None = None) -> tuple[byte
         print(f"[DOWNLOAD] Erreur téléchargement fichier {final_url}: {e}")
         return None, ""
 
-
 def send_ack_message(phone: str):
     """
     Envoie un message WhatsApp simple d'accusé de réception.
@@ -309,16 +308,14 @@ def send_ack_message(phone: str):
     }
 
     payload = {
-        "messages": [
-            {
-                "from": INFOBIP_WHATSAPP_SENDER,
-                "to": phone,
-                "content": {
-                    "text": "Nous avons bien reçu votre document, merci. "
-                            "Votre dossier est en cours de traitement."
-                },
-            }
-        ]
+        "from": INFOBIP_WHATSAPP_SENDER,
+        "to": phone,
+        "content": {
+            "text": (
+                "Nous avons bien reçu votre document, merci. "
+                "Votre dossier est en cours de traitement."
+            )
+        }
     }
 
     try:
@@ -326,8 +323,10 @@ def send_ack_message(phone: str):
         resp.raise_for_status()
         print(f"[ACK] Ack envoyé à {phone}")
     except Exception as e:
-        print(f"[ACK][ERROR] Impossible d'envoyer l'ack à {phone}: {e} - "
-              f"{getattr(resp, 'text', '')}")
+        print(
+            f"[ACK][ERROR] Impossible d'envoyer l'ack à {phone}: {e} - "
+            f"{getattr(resp, 'text', '')}"
+        )
 
 
 # ============================
