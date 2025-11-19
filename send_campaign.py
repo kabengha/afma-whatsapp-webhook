@@ -1,16 +1,32 @@
 import os
 import csv
+import re
 import requests
 
 INFOBIP_API_KEY = os.getenv("INFOBIP_API_KEY")
 INFOBIP_BASE_URL = os.getenv("INFOBIP_BASE_URL", "https://m3n6y4.api.infobip.com")
 
 # ⚠️ À vérifier sur Infobip :
-WHATSAPP_SENDER = "212700049292"            # ton numéro WhatsApp AFMA
-TEMPLATE_NAME = "complement_requis_afma_v3"    # nom EXACT de ta template
-TEMPLATE_LANGUAGE = "fr"                    # ou "fr_FR" si besoin
+WHATSAPP_SENDER = "212700049292"              # ton numéro WhatsApp AFMA
+TEMPLATE_NAME = "complement_requis_afma_v3"   # nom EXACT de ta template
+TEMPLATE_LANGUAGE = "fr"                      # ou "fr_FR" si besoin
 
 CSV_FILE = "campagne_adherents_infobip-test2.csv"  # ton fichier ; séparateur = ;
+
+
+def clean_placeholder(value: str) -> str:
+    """
+    Nettoie une valeur avant de l'envoyer dans un placeholder Infobip :
+    - supprime les retours à la ligne / tabulations
+    - réduit les espaces multiples
+    """
+    if not value:
+        return ""
+    # remplacer \n, \r, \t par un espace
+    value = value.replace("\n", " ").replace("\r", " ").replace("\t", " ")
+    # réduire les séries de 2+ espaces en 1 seul
+    value = re.sub(r"\s{2,}", " ", value)
+    return value.strip()
 
 
 def send_template_message(
@@ -37,6 +53,12 @@ def send_template_message(
         "Accept": "application/json",
     }
 
+    # Nettoyage pour respecter les règles d’Infobip
+    nom_adherent = clean_placeholder(nom_adherent)
+    date_consultation = clean_placeholder(date_consultation)
+    frais_engages = clean_placeholder(frais_engages)
+    observation = clean_placeholder(observation)
+
     placeholders = [
         nom_adherent,       # {{1}}
         date_consultation,  # {{2}}
@@ -45,17 +67,21 @@ def send_template_message(
     ]
 
     payload = {
-        "from": WHATSAPP_SENDER,
-        "to": to_number,
-        "content": {
-            "templateName": TEMPLATE_NAME,
-            "language": TEMPLATE_LANGUAGE,
-            "templateData": {
-                "body": {
-                    "placeholders": placeholders
+        "messages": [   # ✅ obligatoire pour Infobip
+            {
+                "from": WHATSAPP_SENDER,
+                "to": to_number,
+                "content": {
+                    "templateName": TEMPLATE_NAME,
+                    "language": TEMPLATE_LANGUAGE,
+                    "templateData": {
+                        "body": {
+                            "placeholders": placeholders
+                        }
+                    }
                 }
             }
-        }
+        ]
     }
 
     print(f"[SEND] Vers {to_number} - {nom_adherent} - {date_consultation} - {frais_engages}")
@@ -85,7 +111,6 @@ def run_campaign():
             date_consult = row["D.Consultation"].strip()
             frais = row["Frais,Engagés"].strip()
             observation = row["Observation"].strip()
-            # nom_client = row.get("Nom.Client", "").strip()  # dispo si tu veux un jour {{5}}
 
             if not numero:
                 print("[SKIP] Ligne sans numéro")
