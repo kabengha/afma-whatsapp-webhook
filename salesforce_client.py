@@ -102,6 +102,25 @@ def create_case(session: dict, phone: str, nom: str | None = None,
     return case_id
 
 
+def update_case_status(session: dict, case_id: str, new_status: str = "Nouvelle demande") -> None:
+    """
+    Met à jour le statut d'un Case existant.
+    Ex : le remettre à 'Nouvelle demande' après réception d'un document.
+    """
+    url = f"{session['instance_url']}/services/data/v59.0/sobjects/Case/{case_id}"
+    headers = _headers(session)
+
+    payload = {
+        "Status": new_status
+    }
+
+    resp = requests.patch(url, headers=headers, json=payload, timeout=10)
+    try:
+        resp.raise_for_status()
+    except requests.HTTPError as e:
+        raise SalesforceError(f"Erreur update_case_status: {e} - {resp.text}")
+
+
 def create_content_version(session: dict, file_bytes: bytes, filename: str,
                            title: str | None = None) -> tuple[str, str]:
     """

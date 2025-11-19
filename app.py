@@ -10,6 +10,7 @@ from salesforce_client import (
     get_salesforce_session,
     create_case,
     upload_document_for_case,
+    update_case_status,      
     SalesforceError,
 )
 
@@ -292,7 +293,6 @@ def download_file(url: str, suggested_filename: str | None = None) -> tuple[byte
         print(f"[DOWNLOAD] Erreur téléchargement fichier {final_url}: {e}")
         return None, ""
 
-
 def send_ack_message(phone: str):
     """
     Envoie un message WhatsApp simple d'accusé de réception.
@@ -309,16 +309,17 @@ def send_ack_message(phone: str):
     }
 
     payload = {
-        "messages": [
-            {
-                "from": INFOBIP_WHATSAPP_SENDER,
-                "to": phone,
-                "content": {
-                    "text": "Nous avons bien reçu votre document, merci. "
-                            "Votre dossier est en cours de traitement."
-                },
-            }
-        ]
+        "from": INFOBIP_WHATSAPP_SENDER,
+        "to": phone,
+        "content": {
+            "text": (
+                "Bonjour,\n\n"
+                "Nous vous remercions pour l’envoi de votre complément de dossier.\n"
+                "Votre document a bien été reçu et sera traité dans les plus brefs délais.\n\n"
+                "Vous pouvez suivre le traitement de votre dossier via l’application mobile ou le portail Web.\n\n"
+                "Cordialement."
+            )
+        }
     }
 
     try:
@@ -326,8 +327,10 @@ def send_ack_message(phone: str):
         resp.raise_for_status()
         print(f"[ACK] Ack envoyé à {phone}")
     except Exception as e:
-        print(f"[ACK][ERROR] Impossible d'envoyer l'ack à {phone}: {e} - "
-              f"{getattr(resp, 'text', '')}")
+        print(
+            f"[ACK][ERROR] Impossible d'envoyer l'ack à {phone}: {e} - "
+            f"{getattr(resp, 'text', '')}"
+        )
 
 
 # ============================
@@ -434,7 +437,7 @@ def infobip_webhook():
                 received_at=received_at,
             )
 
-            # Si on a un document ou une image → upload vers Salesforce
+           # Si on a un document ou une image → upload vers Salesforce
             if doc_url:
                 file_bytes, filename = download_file(doc_url, suggested_filename=caption)
                 if file_bytes:
@@ -448,10 +451,18 @@ def infobip_webhook():
                     )
                     print(f"[SF] Document lié au Case {case_id} via ContentDocumentLink {link_id}")
 
+                    # 🔁 Réouvrir / remettre le Case en "Nouvelle demande"
+                    try:
+                        update_case_status(sf_session, case_id, "Nouvelle demande")
+                        print(f"[SF] Statut du Case {case_id} remis à 'Nouvelle demande'")
+                    except SalesforceError as e:
+                        print(f"[SF][ERROR] Impossible de mettre à jour le statut du Case {case_id}: {e}")
+
                     # Accusé de réception après upload OK
                     send_ack_message(phone)
                 else:
                     print(f"[SF] Aucun fichier téléchargé pour {doc_url}, upload ignoré.")
+                 
 
         except SalesforceError as e:
             print(f"[SF][ERROR] Erreur Salesforce: {e}")
