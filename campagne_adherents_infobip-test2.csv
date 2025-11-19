@@ -1,4 +1,4 @@
-full.name.adherent;Num tele;D.Consultation;Frais.Engagés;Observation;Nom.Client
+full.name.adherent;Num tele;D.Consultation;Frais,Engagés;Observation;Nom.Client
 AGOUZOUL Brahim;212668141991;13/11/2025;800;Les causes et les circonstances de l'accident/traumatisme;LA GENDARMERIE ROYALE
 HARBOUL Lamia;212667791858;03/10/2025;1935;La facture de l'opticien complétée par le degré de la dioptrie;LA GENDARMERIE ROYALE
 OUHAMMI Rachid;212662395266;07/10/2025;1400;La cotation détaillée des soins réalisés/à réaliser avec les N° des dents;LA GENDARMERIE ROYALE
@@ -208,4 +208,5 @@ ESSEBBARI Mehdi;212671569346;10/03/2025;4200;"Le devis détaillé (soins & proth
 AMEJRAR Driss;212661081015;09/03/2025;2150;L'attestation de scolarité 2024/2025;LA GENDARMERIE ROYALE
 EL MADI Bouhali;212661862750;31/01/2025;1791;L'attestation de scolarité 2024/2025;LA GENDARMERIE ROYALE
 M'BIRIK Bilal;212665836962;08/01/2025;13765.96;L'extrait d'acte de naissance du nouveau-né;LA GENDARMERIE ROYALE
+
 
