@@ -10,6 +10,7 @@ from salesforce_client import (
     get_salesforce_session,
     create_case,
     upload_document_for_case,
+    update_case_status,      
     SalesforceError,
 )
 
@@ -433,7 +434,7 @@ def infobip_webhook():
                 received_at=received_at,
             )
 
-            # Si on a un document ou une image → upload vers Salesforce
+           # Si on a un document ou une image → upload vers Salesforce
             if doc_url:
                 file_bytes, filename = download_file(doc_url, suggested_filename=caption)
                 if file_bytes:
@@ -447,10 +448,18 @@ def infobip_webhook():
                     )
                     print(f"[SF] Document lié au Case {case_id} via ContentDocumentLink {link_id}")
 
+                    # 🔁 Réouvrir / remettre le Case en "Nouvelle demande"
+                    try:
+                        update_case_status(sf_session, case_id, "Nouvelle demande")
+                        print(f"[SF] Statut du Case {case_id} remis à 'Nouvelle demande'")
+                    except SalesforceError as e:
+                        print(f"[SF][ERROR] Impossible de mettre à jour le statut du Case {case_id}: {e}")
+
                     # Accusé de réception après upload OK
                     send_ack_message(phone)
                 else:
                     print(f"[SF] Aucun fichier téléchargé pour {doc_url}, upload ignoré.")
+                 
 
         except SalesforceError as e:
             print(f"[SF][ERROR] Erreur Salesforce: {e}")
