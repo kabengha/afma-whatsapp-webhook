@@ -76,7 +76,7 @@ def create_case(session: dict, phone: str, nom: str | None = None,
     headers = _headers(session)
 
     payload = {
-        # Nom de l'adhérent (Nom.Prénom.Adhérent)
+        # Nom de l'adhérent (full.name.adherent)
         "Nom__c": nom or "",
         # Nom de l'entreprise (Nom.Client)
         "NomDeLentreprise__c": entreprise or "",

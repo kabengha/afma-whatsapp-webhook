@@ -20,7 +20,7 @@ app = Flask(__name__)
 # ============================
 INFOBIP_API_KEY = os.getenv("INFOBIP_API_KEY")
 INFOBIP_BASE_URL = os.getenv("INFOBIP_BASE_URL", "https://m3n6y4.api.infobip.com")
-INFOBIP_WHATSAPP_SENDER = os.getenv("INFOBIP_WHATSAPP_SENDER")  # ex: "212700049292"
+INFOBIP_WHATSAPP_SENDER = os.getenv("INFOBIP_WHATSAPP_SENDER", "212700049292")
 
 # ============================
 #  Base de données campagne (CSV)
@@ -45,7 +45,7 @@ def load_client_db(csv_path: str | None = None):
     CLIENT_ROWS_BY_PHONE = {}
 
     try:
-        with open(csv_path, newline="", encoding="utf-8") as f:
+        with open(csv_path, newline="", encoding="utf-8-sig") as f:
             reader = csv.DictReader(f, delimiter=";")
             for row in reader:
                 # Adapter au nom de colonne réel dans ton CSV
@@ -73,13 +73,13 @@ def load_client_db(csv_path: str | None = None):
 def extract_name_from_row(row: dict) -> str | None:
     """
     Récupère le nom complet de l'adhérent depuis une ligne CSV.
-    Pour toi : colonne 'Nom.Prénom.Adhérent'.
+    Pour toi : colonne 'full.name.adherent'.
     """
     if not row:
         return None
 
     for col in [
-        "Nom.Prénom.Adhérent",  # 👈 ton cas principal
+        "full.name.adherent",  # 👈 ton cas principal
         "Nom",
         "Nom complet",
         "FullName",
@@ -354,6 +354,9 @@ def infobip_webhook():
 
     # Traiter chaque message
     for msg in results:
+        if not msg.get("integrationType") or "message" not in msg:
+            print("[SKIP] Évènement de statut (delivery/seen), ignoré pour Salesforce.")
+            continue
         phone = msg.get("from") or msg.get("sender")
         received_at = msg.get("receivedAt")
         contact = msg.get("contact", {}) or {}

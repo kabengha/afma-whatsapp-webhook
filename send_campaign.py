@@ -106,7 +106,7 @@ def run_campaign():
 
         for row in reader:
             # ⚠️ noms EXACTS des colonnes
-            nom_adherent = row["Nom.Prénom.Adhérent"].strip()
+            nom_adherent = row["full.name.adherent"].strip()
             numero = row["Num tele"].strip()
             date_consult = row["D.Consultation"].strip()
             frais = row["Frais,Engagés"].strip()
