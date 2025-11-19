@@ -39,8 +39,8 @@ def load_client_db(csv_path: str | None = None):
     global CLIENT_ROWS_BY_PHONE
 
     if csv_path is None:
-        # Par défaut : fichier dans le même dossier que app.py
-        csv_path = os.getenv("CLIENT_CSV_PATH", "afma-cam.csv")
+        # ⚠️ par défaut on pointe sur ton fichier de campagne
+        csv_path = os.getenv("CLIENT_CSV_PATH", "campagne_adherents_infobip-test2.csv")
 
     CLIENT_ROWS_BY_PHONE = {}
 
@@ -72,14 +72,14 @@ def load_client_db(csv_path: str | None = None):
 
 def extract_name_from_row(row: dict) -> str | None:
     """
-    Essaye de récupérer le nom complet depuis une ligne CSV.
-    Adapté à ton exemple 'Nom.Prénom.Adhérent'.
+    Récupère le nom complet de l'adhérent depuis une ligne CSV.
+    Pour toi : colonne 'Nom.Prénom.Adhérent'.
     """
     if not row:
         return None
 
     for col in [
-        "Nom.Prénom.Adhérent",
+        "Nom.Prénom.Adhérent",  # 👈 ton cas principal
         "Nom",
         "Nom complet",
         "FullName",
@@ -93,13 +93,14 @@ def extract_name_from_row(row: dict) -> str | None:
 
 def extract_company_from_row(row: dict) -> str | None:
     """
-    Essaye de récupérer le nom entreprise depuis une ligne CSV.
-    (si tu ajoutes une colonne plus tard).
+    Récupère le nom de l'entreprise depuis une ligne CSV.
+    Pour toi : colonne 'Nom.Client'.
     """
     if not row:
         return None
 
     for col in [
+        "Nom.Client",          # 👈 ton vrai nom de colonne
         "Entreprise",
         "Nom entreprise",
         "Raison sociale",

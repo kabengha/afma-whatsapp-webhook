@@ -76,9 +76,10 @@ def create_case(session: dict, phone: str, nom: str | None = None,
     headers = _headers(session)
 
     payload = {
+        # Nom de l'adhérent (Nom.Prénom.Adhérent)
         "Nom__c": nom or "",
-        # adapte le nom du champ entreprise si besoin :
-        "Entreprise__c": entreprise or "",
+        # Nom de l'entreprise (Nom.Client)
+        "NomDeLentreprise__c": entreprise or "",
         "Origin": "Whatsapp",
         "TypeDeDeclaration__c": "Complément d'information",
         "Type": "Déclaration Maladie",
