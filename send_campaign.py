@@ -6,9 +6,9 @@ INFOBIP_API_KEY = os.getenv("INFOBIP_API_KEY")
 INFOBIP_BASE_URL = os.getenv("INFOBIP_BASE_URL", "https://m3n6y4.api.infobip.com")
 
 # ⚠️ À vérifier sur Infobip :
-WHATSAPP_SENDER = "212700049292"            # ton numéro WhatsApp AFMA
-TEMPLATE_NAME = "complement_requis_afma_v3"    # nom EXACT de ta template
-TEMPLATE_LANGUAGE = "fr"                    # ou "fr_FR" si besoin
+WHATSAPP_SENDER = "212700049292"                 # ton numéro WhatsApp AFMA
+TEMPLATE_NAME = "complement_requis_afma_v3"      # nom EXACT de ta template
+TEMPLATE_LANGUAGE = "fr"                         # ou "fr_FR" si Infobip l'exige
 
 CSV_FILE = "campagne_adherents_infobip-test2.csv"  # ton fichier ; séparateur = ;
 
@@ -22,11 +22,6 @@ def send_template_message(
 ):
     """
     Envoie UN message template WhatsApp pour UNE ligne du fichier.
-    Les placeholders correspondent à :
-      {{1}} = nom_adherent
-      {{2}} = date_consultation
-      {{3}} = frais_engages
-      {{4}} = observation
     """
 
     url = f"{INFOBIP_BASE_URL}/whatsapp/1/message/template"
@@ -44,18 +39,23 @@ def send_template_message(
         observation,        # {{4}}
     ]
 
+    # 👉 CORRECT indentation (très important)
     payload = {
-        "from": WHATSAPP_SENDER,
-        "to": to_number,
-        "content": {
-            "templateName": TEMPLATE_NAME,
-            "language": TEMPLATE_LANGUAGE,
-            "templateData": {
-                "body": {
-                    "placeholders": placeholders
+        "messages": [
+            {
+                "from": WHATSAPP_SENDER,
+                "to": to_number,
+                "content": {
+                    "templateName": TEMPLATE_NAME,
+                    "language": TEMPLATE_LANGUAGE,
+                    "templateData": {
+                        "body": {
+                            "placeholders": placeholders
+                        }
+                    }
                 }
             }
-        }
+        ]
     }
 
     print(f"[SEND] Vers {to_number} - {nom_adherent} - {date_consultation} - {frais_engages}")
@@ -79,13 +79,11 @@ def run_campaign():
         reader = csv.DictReader(f, delimiter=";")
 
         for row in reader:
-            # ⚠️ noms EXACTS des colonnes
             nom_adherent = row["Nom.Prénom.Adhérent"].strip()
             numero = row["Num tele"].strip()
             date_consult = row["D.Consultation"].strip()
             frais = row["Frais,Engagés"].strip()
             observation = row["Observation"].strip()
-            # nom_client = row.get("Nom.Client", "").strip()  # dispo si tu veux un jour {{5}}
 
             if not numero:
                 print("[SKIP] Ligne sans numéro")
