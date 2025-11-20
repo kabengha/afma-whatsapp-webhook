@@ -4,7 +4,7 @@ import csv
 from datetime import datetime, timedelta
 
 import requests
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 
 from salesforce_client import (
     get_salesforce_session,
@@ -471,9 +471,19 @@ def infobip_webhook():
 
     return jsonify({"status": "ok"}), 200
 
+@app.route("/download-report")
+def download_report():
+    file_path = "rapport_envoi_detaille.csv"
+    if not os.path.exists(file_path):
+        return "Fichier non trouvé", 404
+
+    return send_file(file_path, as_attachment=True)
+
 
 # Charger la base campagne au démarrage du module
 load_client_db()
+
+
 
 if __name__ == "__main__":
     # Dev local
