@@ -1,31 +1,514 @@
-﻿full.name.adherent;Num tele;D.Consultation;Frais,Engagés;Observation;Nom.Client
-EL ALAMI Ahmed;212602300416;14/11/2025;2000;Le dossier numérisé/scanné complet;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-EL RHOUTTAIS Ech-Cherki;212661817229;16/10/2025;472;"L'attestation de scolarité; Age limite de la prestation atteint";LA FRATERNELLE DE LA GENDARMERIE ROYALE
-BOUAZZAH Mohamed;212664454632;16/10/2025;425;L'extrait d'acte de naissance de l'enfant  AFNAN;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-EL RHOUTTAIS Ech-Cherki;212661817229;21/10/2025;300;"L'attestation de scolarité; Age limite de la prestation atteint";LA FRATERNELLE DE LA GENDARMERIE ROYALE
-QTARAB Abdelhadi;212664875375;07/07/2025;300;"La copie de la CIN  conjoint
-La copie de l'acte de mariage avec MME AWATIF";LA FRATERNELLE DE LA GENDARMERIE ROYALE
-MOUFTAKIR Samir;212669804933;01/08/2025;233.9;EN DOUBLE 040.2025.01064811;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-ABERBACH Mohammed;212676321923;08/10/2025;200;La facture détaillée de la clinique;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-BADINE Mohamed;212630665517;02/10/2025;303;L'attestation de RIB délivrée par la banque;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-JENNANI ABDESSALAM;212602170473;29/10/2025;1950;La note d’honoraire du médecin traitant ;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-HRABBA Miloud;212673369896;23/04/2025;977.5;copie d'acte de mariage;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-MAATAOUI Adel;212662545939;23/10/2025;2400;"L'attestation de scolarité; Age limite de la prestation atteint";LA FRATERNELLE DE LA GENDARMERIE ROYALE
-KANNOUCH Khalid;212663104542;24/03/2025;120;"L'attestation de scolarité; Age limite de la prestation atteint";LA FRATERNELLE DE LA GENDARMERIE ROYALE
-ERREMANI Mouhçine;212675444681;10/07/2025;922.9;L'attestation de RIB délivrée par la banque;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-AHMITER RACHID;212663648321;22/10/2025;900;La note d’honoraire du médecin traitant ;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-ERREMANI Mouhçine;212675444681;02/07/2025;1300;L'attestation de RIB délivrée par la banque;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-SLIMANI Nabil;212666888420;07/10/2025;300;La note d’honoraire du médecin traitant ;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-LAQDIRI Achraf;212694971091;28/10/2025;4000;La cotation détaillée des soins réalisés ;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-AHMITER RACHID;212663648321;22/10/2025;949.9;La facture de l'opticien complétée par le degré de la dioptrie lisible ;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-LOKMANE Abdelkrim;212669098925;17/10/2025;373.8;La note d’honoraire du médecin traitant ;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-ERREMANI Mouhçine;212675444681;02/07/2025;1400;L'attestation de RIB délivrée par la banque;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-SLIMANI Nabil;212666888420;07/10/2025;693.3;La note d’honoraire du médecin traitant ;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-ERREMANI Mouhçine;212675444681;02/07/2025;300;L'attestation de RIB délivrée par la banque;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-ERREMANI Mouhçine;212675444681;08/07/2025;733;L'attestation de RIB délivrée par la banque;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-OUBRAHIM Ayoub;212642632391;16/10/2025;1100;La cotation détaillée des soins réalisés  avec les N° des dents;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-EL BOQ Abdelali;212661948460;28/07/2025;372.65;"L'attestation de scolarité;2025/2026";LA FRATERNELLE DE LA GENDARMERIE ROYALE
-KARBAL Abderrahim;212662313985;25/09/2025;515.6;  la copie de l'acte de mariage;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-KARBAL Abderrahim;212662313985;16/10/2025;108.7;la copie de l'acte de mariage;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-KARBAL Abderrahim;212662313985;01/10/2025;201;La copie de l'acte de mariage;LA FRATERNELLE DE LA GENDARMERIE ROYALE
-RACHIDI Zouin;212661440606;11/06/2025;1550;L'attestation de scolarité 2024/2025 et 2025/2026;LA FRATERNELLE DE LA GENDARMERIE ROYALE
+﻿full.name.adherent;Num tele;D.Consultation;Frais.Engagé;Observation;Nom.Client
+LEMSIDI HASSANE;212675259243;09/09/2025;2350,00;Les photocopies des pièces justificatives;MHAI ACTIFS
+BASSIR ABDELHAMID;212661982747;24/09/2025;389,00;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+BASSIR ABDELHAMID;212661982747;24/09/2025;1800,00;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+BENCHAIB EL NAJEM;212666578583;06/10/2025;1000,00;Justificatifs de non d'accouchement par césarienne;MHAI ACTIFS
+DAHMAN LABIB;212676231466;14/10/2025;1200,00;L'ordonnance et le compte rendu du scanner.;MHAI ACTIFS
+AIT OUCHAOUI MOHAMED;212710283604;09/10/2025;669.7;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+NACIF MOHAMED AMINE;212616205281;04/10/2025;1810,00;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+BITIT BENAISSA;212677438743;09/10/2025;2500,00;L'original de la declaration maladie et des pièces justificatives;MHAI ACTIFS
+BELKASSEM BRAHIM;212658962819;10/10/2025;586.4;facture de la pharmacie;MHAI ACTIFS
+MOUSTADRAF ABDELHAQ;212618300559;10/09/2025;1000,00;Justificatifs de non d'accouchement par césarienne;MHAI ACTIFS
+ABIDA BOUAZZA;212654637861;25/09/2025;6000,00;L'original de la declaration maladie et des pièces justificatives;MHAI ACTIFS
+AMZYL HASSAN;212670444726;16/10/2025;466.4;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+IBOUHA LAHCEN;212629024161;26/09/2025;2282.4;Une facture détaillée et acquittée de l'opticien.;MHAI ACTIFS
+AIT OUCHAOUI MOHAMED;212710283604;07/10/2025;2668.1;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+MANSOUR MOHAMED;212676247361;11/10/2025;524.6;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+HLALI  M'HAMMED;212658517653;15/09/2025;601.8;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+BAGOUZ ABDELMEJED;212673141004;17/09/2025;1000,00;Justificatifs de non d'accouchement par césarienne;MHAI ACTIFS
+AIT SAID BELAID;212661649777;16/10/2025;1474.1;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+BOULEMDARATE AHMED;212611912176;06/10/2025;271.4;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+BELLOUZ MUSTAPHA;212669327899;16/09/2025;2160,00;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI ACTIFS
+BOUJOUJ OMAR;212618086558;29/08/2025;800.9;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+EZ ZGHARI AHMED;212642411190;02/10/2025;1049.8;L'ordonnance prescrivant les médicaments achetés.;MHAI ACTIFS
+YOUMANI BOUCHAIB;212667727233;21/10/2025;794.6;la positon de la dent à extraire.;MHAI ACTIFS
+EL MASNAOUI IDRISSI MOHAMMED;212609488616;16/10/2025;1296.1;la feuille des soins .;MHAI ACTIFS
+es-saiydy mohamed;212611767388;20/10/2025;800,00;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+EL HOUARY MOHAMED;212654686609;22/09/2025;400,00;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+EL KADIRI Mohamed;212672444301;08/09/2025;350,00;Document reçu et déposé pour étude;MHAI ACTIFS
+LAHNINE MUSTAPHA;212662328963;13/10/2025;2069.5;Rapport médecin reçu;MHAI ACTIFS
+ABOUNOUASS DRISS;212666367700;22/10/2025;840,00;Les photocopies des pièces justificatives;MHAI ACTIFS
+ER-RAKHA MUSTAPHA;212648383840;11/10/2025;1920,00;Rapport médecin reçu;MHAI ACTIFS
+BNIZID YOUNES;212627509447;06/10/2025;235.1;Un bulletin d'adhésion rectificatif.ainsi qu'une copie de l'acte de;MHAI ACTIFS
+KARAM MOHAMMED;212641685873;30/09/2025;1461.4;la facture est illisible;MHAI ACTIFS
+MRABET AHMED ;212724984153;23/09/2025;881,00;Le reçu des honoraires perçus par le laboratoire des analyses médicales.;MHAI VEUVES ET INVALIDES
+SEIDI YOUSSEF;212670820373;26/08/2025;422,00;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+EL BOUANANI MBARKA ;212655119794;08/10/2025;1380,00;Manque relevé d'identité bancaire (RIB);MHAI VEUVES ET INVALIDES
+BRIGHET HALIMA ;212652280543;21/10/2025;347.5;L'ordonnance prescrivant les médicaments achetés.;MHAI VEUVES ET INVALIDES
+NEDDARA KHALED;212681426186;17/09/2025;1000,00;Justifiant l accouchement normal et non par césarienne.;MHAI ACTIFS
+MAHRAR MOHAMED ;212667324969;17/09/2025;2197.8;Manque relevé d'identité bancaire (RIB);MHAI VEUVES ET INVALIDES
+SALSIL KHADIJA ;212610885534;24/09/2025;456.8;la feuille des soins .;MHAI VEUVES ET INVALIDES
+EL BOUCHTI MOUNA ;212654869099;17/10/2025;1980,00;Une facture détaillée de l'acte effectué;MHAI VEUVES ET INVALIDES
+FIKRI ISMAIL;212663751466;28/09/2025;1000,00;Justificatifs de non d'accouchement par césarienne;MHAI ACTIFS
+MOUHIB  MOHAMMED;212615391733;27/10/2025;2267.3;lisible svp .;MHAI ACTIFS
+DARIF AHMED;212653851689;11/10/2025;1209.9;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+SERTAKHO HAMOU;212670216570;21/10/2025;466.2;documents illisible;MHAI ACTIFS
+OURAHMOUCHE ABDELATIF;212673255114;20/08/2025;794,00;la feuille des soins .;MHAI ACTIFS
+EL BOUANANI MBARKA ;212655119794;08/10/2025;1380,00;Manque relevé d'identité bancaire (RIB);MHAI VEUVES ET INVALIDES
+AKOUDAD MOHAMED;212608903980;17/09/2025;5676.4;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+EL QESEMY ABDELHAK;212609591722;12/09/2025;503,00;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+BOULEMDARATE AHMED;212611912176;06/10/2025;1186.6;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+EL HOUARY MOHAMED;212654686609;18/09/2025;1129,00;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+DARIFI EL MADANI ;212662055032;02/09/2025;1317.2;Une facture détaillée de l'acte effectué;MHAI VEUVES ET INVALIDES
+CHENOUFI ABDELILAH;212658440388;26/09/2025;2183,00;Les photocopies des pièces justificatives;MHAI ACTIFS
+TALEB BRAHIM;212662633154;10/10/2025;1621,00;L'ordonnance prescrivant l'examen radiologique pratiqué.;MHAI ACTIFS
+MOUHCINE  HASSAN;212666354858;13/10/2025;1531.76;le compte rendu d'hospitalisation;MHAI ACTIFS
+ARBAI MOHAMED;212613889333;03/09/2025;1525,00;Une facture détaillée de la pharmacie.;MHAI ACTIFS
+KARBASS ABDELLATIF;212667966053;10/10/2025;1000,00;Justifiant l accouchement normal et non par césarienne.;MHAI ACTIFS
+BENFARHOUN YOUNESS;212670639972;08/10/2025;500,00;la nature de  l'acte  effectue;MHAI ACTIFS
+BELKHADIR AHMED;212611715904;03/09/2025;4330,00;Complément d'information reçu;MHAI ACTIFS
+AKOUDAD JAMAL;212672281433;15/10/2025;12212,00;illisible;MHAI ACTIFS
+EL BOUCHTI MOUNA ;212654869099;17/10/2025;1980,00;Une facture détaillée de l'acte effectu;MHAI VEUVES ET INVALIDES
+LAMZIRI MANSSOUR;212660300375;16/10/2025;291.7;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+hachm MOHAMMED;212682406041;17/09/2025;700,00;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+EL MEKKI ALANTI ;212677996596;24/09/2025;806,00;L'ordonnance prescrivant les médicaments achetés.;MHAI VEUVES ET INVALIDES
+ZAGHDOUD MOHAMED;212690243295;25/09/2025;20000,00;Rapport médecin reçu;MHAI ACTIFS
+SAHIL MOHAMED;212678509697;14/10/2025;1640.7;Les photocopies des pièces justificatives;MHAI ACTIFS
+FARAJI MBAREK;212672491298;21/10/2025;1500,00;la feuille des soins  .;MHAI ACTIFS
+HAMMOU YOUNESS;212650877944;24/10/2025;862,00;Les causes. circonstances. date. lieu et heure de l'accident provoquant;MHAI ACTIFS
+AMEJJAD MBARK;212661777614;19/09/2025;1296.4;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+ELABAD YASSINE;212629625300;19/10/2025;1000,00;Justifiant l accouchement normal et non par césarienne.;MHAI ACTIFS
+AIT BAICH MOHAMED;212625853185;24/09/2025;289.6;Les photocopies des pièces justificatives;MHAI ACTIFS
+K RIMOU EL-MILOUDI;212673601883;01/10/2025;1000,00;une justificatif de non accouchement par césarienne;MHAI ACTIFS
+CHARIF ABDERRAHMAN;212673246097;25/10/2025;1000,00;1000 dh;MHAI ACTIFS
+ERRADI ABDELHAMID;212662749384;16/09/2025;800.9;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI ACTIFS
+AIT OUMZIL OMAR;212672366808;08/09/2025;10719.41;compte rendu d hospitalisation;MHAI ACTIFS
+ERRAMI ABDELLATIF;212666585081;07/10/2025;2807.5;la nature exacte de la maladie svp;MHAI ACTIFS
+EL HARCHI BELAID;212671531484;15/10/2025;1365.4;la feuille des soins .;MHAI ACTIFS
+EL GADI LAHCEN ;212619559228;23/09/2025;247.7;Les photocopies des pièces justificatives;MHAI VEUVES ET INVALIDES
+HAMMICH AHMED;212677511482;14/10/2025;388,00;Les causes. circonstances. date. lieu et heure de l'accident provoquant;MHAI ACTIFS
+ITRO EL MIMOUD;212666802027;24/10/2025;0,00;Les photocopies des pièces justificatives;MHAI ACTIFS
+EL MEKKI ALANTI ;212677996596;24/09/2025;1240.1;l'original de l'ordonnance prescrivant les analyses effectuées.;MHAI VEUVES ET INVALIDES
+MCHICHOU MHAMED ;212664544409;19/04/2025;10400,00;bonjour docteur . la cotation svp;MHAI VEUVES ET INVALIDES
+BAKKACH FATIMA ;212603382829;17/10/2025;1050,00;bonjour . merci de  m'envoyer  la facture  globale  d'operation;MHAI VEUVES ET INVALIDES
+JAMALI ELHOUCINE;212668158886;21/10/2025;400,00;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI ACTIFS
+oulghazi lahcen;212659031057;14/10/2025;9262.81;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+SAADANE DRISS;212667206081;30/09/2025;155.8;Une facture détaillée de la pharmacie.;MHAI ACTIFS
+LACHGAR  SAID;212661466180;29/09/2025;7997.9;Un reçu des honoraires perçus par le cabinet de radiologie.;MHAI ACTIFS
+AIT LAHCEN IDAR;212671756108;24/10/2025;5653.3;le compte rendu d'hospitalisation;MHAI ACTIFS
+HAMMICH MOHAMED;212633691349;29/10/2025;210,00;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI ACTIFS
+HASSANI MOHAMED;212615388932;21/10/2025;363.6;L'extrait d'acte de naissance de l'enfant.;MHAI ACTIFS
+AZOUGAGHE OMAR;212668086844;15/09/2025;500,00;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+AZRIOUIL ABDELLAH;212677331543;29/10/2025;1000,00;une justificatif de non accouchement par césarienne;MHAI ACTIFS
+BENCHAD MY LAHOUCINE;212725671254;07/07/2025;612,00;Une facture détaillée de la pharmacie.;MHAI ACTIFS
+ACHERKIK LARBI;212662426038;31/10/2025;633.5;02/10/2025;MHAI ACTIFS
+OUAHMANE ABDELOUAHID;212642360098;22/09/2025;1000,00;Justifiant l accouchement normal et non par césarienne.;MHAI ACTIFS
+TALBI BRAHIM;212672987751;23/09/2025;1000,00;bonjour . merci de  justifie  non accouchement  par césarien;MHAI ACTIFS
+EL MADANI SAID;212668184223;29/10/2025;323.7;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI ACTIFS
+MECHKOUR KHALID;212676734580;11/08/2025;1000,00;bonjour. merci de  justifie  non accouchement  par césarien;MHAI ACTIFS
+MOUJIB EL MOSTAFA;212696854101;16/10/2025;642.6;ordonnance de la pharmacie;MHAI ACTIFS
+ALOU MOFADAL ;212626803858;21/10/2025;297,00;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI VEUVES ET INVALIDES
+ID BENSALAH MOHAMED;212628166531;21/09/2025;1000,00;merci de  justifie   non  accouchement   par césarien;MHAI ACTIFS
+EL GUENAOUI AHMED;212631698024;02/09/2025;550,00;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI ACTIFS
+CHAHDI EL OUAZZANI TOUHAMI;212668034084;15/10/2025;340,00;position de la dent;MHAI ACTIFS
+ABDELMOUMEN MOHAMED;212668832516;09/10/2025;49000,00;la feuille des soins .;MHAI ACTIFS
+EN NESYRY ABDELLATIF;212623684459;09/10/2025;700,00;Document reçu et déposé pour étude;MHAI ACTIFS
+BZIOUA HALIMA ;212698992951;23/10/2025;357,00;- Facture et résultat des analyses justifiant le montant 180 dhs .;MHAI VEUVES ET INVALIDES
+BAKKACH FATIMA ;212603382829;17/10/2025;1050,00;- bonjour . merci de m'envoyer la facture globale d'operation;MHAI VEUVES ET INVALIDES
+AKAZZAHOU LHOUSSAINE;212661573858;22/07/2025;1044.7;separie les dossier;MHAI ACTIFS
+BENATTIK ABDERRAHMAN;212648079420;12/09/2025;3398.3;facture d'hospitalisation;MHAI ACTIFS
+BENATTIK ABDERRAHMAN;212648079420;20/09/2025;549.6;la facture d'hospitalisation est illisible;MHAI ACTIFS
+BAKHA LHOUSSAINE;212689039220;29/09/2025;3460,00;Soumis pour mise à jour affiliation;MHAI ACTIFS
+AIT LACHGAR MOHAMED;212670419274;28/10/2025;920.7;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+SAMKA AHMED ;212637044789;02/10/2025;524.5;bonjour  merci de  m'envoyer  es résultat  de  h1abc;MHAI VEUVES ET INVALIDES
+EL MOUBARAKI EL MAHJOUB ;212666238379;30/09/2024;1258.1;Une facture détaillée de l'acte effectué;MHAI VEUVES ET INVALIDES
+EL AKROUT RAHMA ;212662449509;22/10/2025;1748.8;Document reçu et déposé pour étude;MHAI VEUVES ET INVALIDES
+FRIKAL ABDENNABI;212666608330;21/10/2025;3200,00;Rapport médecin reçu;MHAI ACTIFS
+AIT SIDI ABDERRAHIM;212624249951;23/10/2025;1000,00;une justificatif de non accouchement par césarienne;MHAI ACTIFS
+MITRE ABDELLATIF;212668295365;01/08/2025;1000,00;une justificatif de non accouchement par césarienne;MHAI ACTIFS
+HSISSEN DERKAOUI ABDELKADER ;212673531496;04/09/2025;3192.8;compte rendu radiologique justifiant l'AVC ischémique;MHAI VEUVES ET INVALIDES
+JAMHOUR RACHID;212648068596;24/09/2025;1703.8;Soumis pour mise à jour affiliation;MHAI ACTIFS
+BOUCHTAOUI MOHAMMED;212653176690;30/09/2025;717.6;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+BENFTAICH MOHAMED;212668878740;01/10/2025;762.7;le dossier est illisible;MHAI ACTIFS
+EL BOUHSSINI ABDESSLAM ;212672548112;29/09/2025;1173.3;Une facture détaillée de la pharmacie.;MHAI VEUVES ET INVALIDES
+EL ASSARI ABDELAZIZ ;212671489251;06/10/2025;49922.97;Rapport médecin reçu;MHAI VEUVES ET INVALIDES
+SLASSI TAYEB ;212669551261;28/10/2025;2000,00;bonjour merci d'envoyer la facture de prothèse total bas;MHAI VEUVES ET INVALIDES
+OUFATTOLE EL MUSTAPHA;212615454878;13/10/2025;800.1;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+AGUIRAR MOHAMED;212615877936;08/10/2025;850,00;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+EL GHARNATI ABDESLAM;212653458269;01/09/2025;1630,00;102.5 dh;MHAI ACTIFS
+ZIADI MOHAMED;212667760855;22/09/2025;784.9;Les causes. circonstances. date. lieu et heure de l'accident provoquant;MHAI ACTIFS
+SMIHY ABDALLAH;212610276571;26/09/2025;760,00;L'original de la declaration maladie et des pièces justificatives;MHAI ACTIFS
+SABER YOUSSEF;212662826528;06/10/2025;1348,00;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+naji said;212676893214;12/09/2025;5061.2;Rapport médecin reçu;MHAI ACTIFS
+EL QESEMY ABDELHAK;212609591722;20/10/2025;341.5;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+BAGHDAD MOHAMMED;212636931053;12/10/2025;2954.4;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+EL BOTI AHMED;212682054812;09/09/2025;1000,00;une justificatif de non accouchement par césarienne;MHAI ACTIFS
+BOUJOUJ OMAR;212618086558;17/09/2025;1000,00;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+CHOUBANE YOUSSEF;212783694551;28/10/2025;3000,00;Soumis pour mise à jour affiliation;MHAI ACTIFS
+harri abdellah;212668131388;20/09/2025;463.3;Soumis pour mise à jour affiliation;MHAI ACTIFS
+ELBAKRI YASSINE;212710052302;30/10/2025;516.7;Soumis pour mise à jour affiliation;MHAI ACTIFS
+BELYAOUI ABDELHALIM;212650691299;01/08/2025;1862.9;Un bulletin d'adhésion rectificatif faisant ressortir les modifications;MHAI ACTIFS
+EL QESEMY ABDELHAK;212609591722;11/10/2025;300,00;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+EL QESEMY ABDELHAK;212609591722;29/10/2025;1236.6;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+AJBAR EL MOKHTAR ;212671614212;07/10/2025;570,00;+ photocopie de CIN de la conjointe FATNA;MHAI VEUVES ET INVALIDES
+EL HAFDI AHMED;212672701347;22/10/2025;1380.4;la facture de la pharmacie;MHAI ACTIFS
+AOULAD MOHAMMADI EL FIKRI;212670364125;11/10/2025;680,00;merci de séparer les dossiers;MHAI ACTIFS
+IRAOUI AYAD;212667489115;18/10/2025;544.8;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI ACTIFS
+AMERNIS YOUSSEF;212682044779;01/10/2025;1990.4;compte rendu;MHAI ACTIFS
+CHAAROU GHARIBA;212666430396;22/09/2025;577.2;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+AKHZAM ABDERRAHMANE;212636035578;17/10/2025;700,00;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+EDDRIF MOHAMMED;212676098439;21/09/2025;745,00;Les causes. circonstances. date. lieu et heure de l'accident provoquant;MHAI ACTIFS
+CHCHAABI ABDELFATTAH;212623447138;22/07/2025;346.6;L'extrait d'acte de naissance de l'enfant.;MHAI ACTIFS
+EL MOUBARAKI EL MAHJOUB ;212666238379;30/09/2024;1258.1;- Une facture détaillée de l'acte effectué;MHAI VEUVES ET INVALIDES
+OUBELAID MBAREK ;212695924708;23/10/2025;400,00;Soumis pour mise à jour affiliation;MHAI VEUVES ET INVALIDES
+ELGATAA ELHABIB;212666187914;02/09/2025;12842,00;Soumis pour mise à jour affiliation;MHAI ACTIFS
+EL MAHFOUD LARBI;212671081035;16/10/2025;700,00;Soumis pour mise à jour affiliation;MHAI ACTIFS
+ZAAZOUA AHMED;212666305533;06/10/2025;3176.8;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+EL MADHOUN ABDESLAM;212672311940;17/10/2025;1000,00;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+EZZINE BRAHIM ;212670569727;14/10/2025;894.2;merci de transmettre le dossier originale de Mr brahim;MHAI VEUVES ET INVALIDES
+BOUKSAIM  ABDENNABI;212672273197;22/09/2025;1000,00;une justificatif de non accouchement par césarienne;MHAI ACTIFS
+EZZAHRAOUI ABDENNABI;212708106583;02/10/2025;1000,00;Justificatifs de non d'accouchement par césarienne;MHAI ACTIFS
+EL ALLALI MOSTAFA;212670226746;22/10/2025;1169.9;Une facture détaillée et acquittée de l'opticien.;MHAI ACTIFS
+IZMAOUNE MOHAMED;212678883462;05/06/2025;1000,00;une justificatif de non accouchement par césarienne;MHAI ACTIFS
+BOUKRI MOHAMED;212626456755;07/10/2025;1000,00;une justificatif de non accouchement par césarienne;MHAI ACTIFS
+ezzahri abdelhadi;212672015763;17/10/2025;242,00;la facture est illisible;MHAI ACTIFS
+KHAIL AHMED;212637162509;07/10/2025;1100,00;les factures;MHAI ACTIFS
+EL-HAJJAMI ABDESSALEM;212678989623;10/10/2025;2883.4;Document reçu et déposé pour étude;MHAI ACTIFS
+AIT SIDI M HAMED ABDELHAKIM;212677197096;28/09/2025;1000,00;Justificatifs de non d'accouchement par césarienne;MHAI ACTIFS
+GOUNINE ABDELLAH;212664677571;28/09/2025;2136,00;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI ACTIFS
+EL AKROUT RAHMA ;212662449509;22/10/2025;1748.8;bonjour docteur la cotation svp;MHAI VEUVES ET INVALIDES
+RIZQUI DRISS ;212673840263;09/10/2025;1001.5;Une facture détaillée de l'acte effectué;MHAI VEUVES ET INVALIDES
+BEN SBIH MOHAMED;212650247445;07/10/2025;1000,00;Justificatifs de non d'accouchement par césarienne;MHAI ACTIFS
+KHEMCH GUERD MOHAMED ;212611607592;09/07/2025;4000,00;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+TTAHIRI HASSAN;212670955450;13/10/2025;10934.9;Rapport médecin reçu;MHAI ACTIFS
+EL MOURABIT MOHAMED;212666913299;22/10/2025;1365.8;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+OTHMAN AHMED;212654639428;23/10/2025;2606,00;Document reçu et déposé pour étude;MHAI ACTIFS
+NOUIDER ABDERRAHIM;212618456753;18/10/2025;518.2;Un bulletin d'adhésion rectificatif faisant ressortir les modifications;MHAI ACTIFS
+LAKBIDA TAHAR;212662495717;24/10/2025;1117,00;ordonnance de medicament avec les prix;MHAI ACTIFS
+TABOUZ ABDELLAH;212666281459;15/10/2025;1930,00;facture de l'opticien;MHAI ACTIFS
+EL MADKOURI KHALID;212670669450;29/08/2025;1000,00;Justificatifs de non d'accouchement par césarienne;MHAI ACTIFS
+AAYATE MOHAMED;212668093163;15/10/2025;3671.7;bonjour docteur . la cotation svp;MHAI ACTIFS
+JOUBAIRI AHMED ;212707020167;22/10/2025;2291.4;Soumis pour mise à jour affiliation;MHAI VEUVES ET INVALIDES
+AJMOUATI MOHAMED;212677760492;29/09/2025;741,00;L'ordonnance prescrivant les médicaments achetés.;MHAI ACTIFS
+ESSAGHIR BOUMEHDI;212666253131;13/10/2025;2166.1;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+CHAKKOUR MOHAMED;212678262926;16/10/2025;7451.19;Bonjour docteur . la cotation ssvp .;MHAI ACTIFS
+JAMOUN ABDELALI;212668019410;04/10/2025;1000,00;justifiant l'accouchement normal et non par césarienne .;MHAI ACTIFS
+TOUIL MOHAMED;212600916844;24/09/2025;585.4;la feuille des soins;MHAI ACTIFS
+BOUMLAKI ABDESLAM ;212767627304;30/08/2025;490.7;L'ordonnance prescrivant les médicaments achetés.;MHAI VEUVES ET INVALIDES
+BEN ZARI SAADIA ;212696517648;03/10/2025;664.5;Un certificat de scolarité de l'année en cours.;MHAI VEUVES ET INVALIDES
+AIT MALEK MOHAMED ;212671746706;02/10/2025;660,00;facture de la fharmacie;MHAI VEUVES ET INVALIDES
+IAZZA OMAR;212762938300;25/10/2025;2255.6;Facture justifiant le montant 700 dhs;MHAI ACTIFS
+ZEHOUANI BRAHIM;212664011962;25/08/2025;2500,00;la facture d'hospitalisation;MHAI ACTIFS
+AZDOUR MOHAMED;212670402695;15/09/2025;750,00;justifiant  450 dh;MHAI ACTIFS
+AZDOUR MOHAMED;212670402695;14/10/2025;240,00;la facture globale détaillée;MHAI ACTIFS
+EL AAFI AHMED ;212661588421;31/10/2025;278.1;Les causes. circonstances. date. lieu et heure de l'accident provoquant;MHAI VEUVES ET INVALIDES
+JOUBAIRI AHMED ;212707020167;22/10/2025;2291.4;Document reçu et déposé pour étude;MHAI VEUVES ET INVALIDES
+BEN-TAMOU ABDESLAM;212661538059;23/09/2025;1750,00;illisible;MHAI ACTIFS
+BYDAR LARBI;212666948014;09/10/2025;1565.5;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+ZARROUK MHAMMAD;212661257489;18/10/2024;11197.75;Un bulletin d'adhésion rectificatif faisant ressortir les modifications;MHAI ACTIFS
+BEN-HARROU AHMED;212643332202;23/09/2025;3422.5;Rapport médecin reçu;MHAI ACTIFS
+RAMI BENAISSA;212670311980;16/10/2025;164.3;la nature exacte de la maladie;MHAI ACTIFS
+BOUJDAR SALAH ;212654264989;06/10/2025;1524,00;Un certificat de scolarité de l'année en cours.;MHAI VEUVES ET INVALIDES
+LAANAITI MOHAMMED;212663139247;24/09/2025;4303.6;Une facture détaillée de la pharmacie.;MHAI ACTIFS
+BOUAMI ABDELHAFID;212696331375;22/10/2025;514.4;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI ACTIFS
+HOMADA MOHAMMED;212665945255;29/09/2025;1050,00;Les photocopies des pièces justificatives;MHAI ACTIFS
+CHAAROU GHARIBA;212666430396;17/10/2025;318.2;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+BEN-TAMOU ABDESLAM;212661538059;01/09/2025;1390,00;illisible;MHAI ACTIFS
+ADARDOR MOHAMED;212659250060;24/09/2025;1000,00;Justificatifs de non d'accouchement par césarienne;MHAI ACTIFS
+HAJAJ AHMED ;212603558493;10/10/2025;11337.52;Soumis pour mise à jour affiliation;MHAI VEUVES ET INVALIDES
+EL HAMIDI ABDELLAH ;212610115042;25/08/2025;16600,00;Manque relevé d'identité bancaire (RIB);MHAI VEUVES ET INVALIDES
+BOUJENNA AHMED;212663337783;10/10/2025;1122.6;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+HARA ABDELAATI;212677322262;24/09/2025;900,00;DOSSIER  ILLISIBLE;MHAI ACTIFS
+JGOUT YAMINA ;212633537727;02/10/2025;850,00;la facture est illisible;MHAI VEUVES ET INVALIDES
+hanane el mostapha;212673055676;16/10/2025;308.7;Les photocopies des pièces justificatives;MHAI ACTIFS
+ET-TAHIRI MOHAMMED;212654141110;23/09/2025;2510.6;le compte rendu d'hospitalisation;MHAI ACTIFS
+BOUCHATAR ABDELAZIZ;212671482451;04/08/2025;11163,00;la facture;MHAI ACTIFS
+EL OUAKILI SAID;212653056162;22/10/2025;1100,00;la feuille des soins lisible svp .;MHAI ACTIFS
+EL OUAKILI SAID;212653056162;16/10/2025;595.1;la feuille des soins lisible svp .;MHAI ACTIFS
+BNIZID YOUNES;212627509447;12/09/2025;1131,00;Un bulletin d'adhésion rectificatif.ainsi qu'une copie de l'acte de;MHAI ACTIFS
+BARKOUK ABDESLAM;212678313832;13/10/2025;752.9;Les causes. circonstances. date. lieu et heure de l'accident provoquant;MHAI ACTIFS
+RIZKI MOHAMED;212661596631;15/10/2025;16967.83;facture  illisible;MHAI ACTIFS
+EL MEKKI ALANTI ;212677996596;24/09/2025;1240.1;Facture et  resultat des analyses;MHAI VEUVES ET INVALIDES
+EL GOUNNOUNI MOHAMED ;212678729767;26/09/2025;14626.13;la facture  globale;MHAI VEUVES ET INVALIDES
+ET TARHI ABDELKARIM;212600196293;24/10/2025;715.5;L'extrait d'acte de naissance de l'enfant.;MHAI ACTIFS
+DARIF AHMED;212653851689;11/10/2025;1209.9;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+BOUKAIA MOHAMED;212663888303;20/10/2025;865,00;Une facture détaillée et acquittée de l'opticien.;MHAI ACTIFS
+AYTE BALIDE MOHAMADE ;212693311106;17/10/2025;13615.83;Rapport médecin reçu;MHAI VEUVES ET INVALIDES
+SAOUI AYYOUB;212659857946;24/10/2025;8200,00;radio panoramique lisible;MHAI ACTIFS
+THICHOU ABDESSAMAD;212637369449;29/08/2025;718.1;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+EL BOUSAIRI MOHAMED;212672975479;13/10/2025;436.2;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+AJBAR EL MOKHTAR ;212671614212;07/10/2025;570,00;Une copie de l'acte de mariage.;MHAI VEUVES ET INVALIDES
+MCHICHOU MHAMED ;212664544409;19/04/2025;10400,00;Document reçu et déposé pour étude;MHAI VEUVES ET INVALIDES
+ZAABOUL MOHAMED ;212664678299;17/10/2025;2062,00;- Les photocopies des pièces justificative;MHAI VEUVES ET INVALIDES
+BISSISSE AZ-EDDINE;212655630163;30/09/2025;632.8;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+EL BOUAZZAOUI MOULAY MOKHTAR;212666390965;20/09/2025;3520,00;Document reçu et déposé pour étude;MHAI ACTIFS
+CHARROUJ RACHID;212655658637;02/10/2025;1500,00;Les causes. circonstances. date. lieu et heure de l'accident provoquant;MHAI ACTIFS
+EL ARABY ABDELALI;212668977398;15/09/2025;11200,00;Les causes. circonstances. date. lieu et heure de l'accident provoquant;MHAI ACTIFS
+el khait mohamed;212672460208;03/09/2025;5850,00;Document reçu et déposé pour étude;MHAI ACTIFS
+ELAASRI ABDELGHAFOUR;212611819377;23/10/2025;1074.1;la feuille des soins;MHAI ACTIFS
+EL AACHI MOHAMED ;212671775248;27/10/2025;3033.6;Manque relevé d'identité bancaire (RIB);MHAI VEUVES ET INVALIDES
+EL AJJANE KELTOUMA ;212626304512;18/08/2025;645.6;Une facture détaillée et acquittée de l'opticien.;MHAI VEUVES ET INVALIDES
+BOUJENNA AHMED;212663337783;10/10/2025;1122.6;Manque relevé d'identité bancaire (RIB);MHAI VEUVES ET INVALIDES
+EL KABBOURI EL MUSTAPHA;212668123464;24/09/2025;1408.2;merci de transmettre le dossier originale de Mr el mustapha;MHAI ACTIFS
+ED-DAYEJ LAHCEN;212661994594;17/10/2025;969.1;Une facture détaillée de la pharmacie.;MHAI ACTIFS
+EL MZADI  MOHAMED;212678329649;08/10/2025;953.6;L'extrait d'acte de naissance de l'enfant.;MHAI ACTIFS
+OUBAZZI ABDELHAFID;212661801192;20/10/2025;14384,00;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+AABIRATE MOHAMED;212673257019;23/10/2025;100,00;Une facture détaillée de l'acte effectué;MHAI ACTIFS
+EL FEZZAZI AHMED ;212690408576;23/10/2025;600,00;La photocopie du dossier médical ayant fait l'objet de remboursement par l'assureur de bas;MHAI VEUVES ET INVALIDES
+AIT KHALD ABDELLAH;212673383357;15/10/2025;4925.3;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+BOUFOUD BRAHIM;212662817163;29/10/2025;524.1;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+EL BETIHIA AHMED;212666653395;24/10/2025;2250,00;remis pour affiliation;MHAI ACTIFS
+HILALI ALI ;212632267929;28/10/2025;541.1;Une copie de l'acte de mariage.;MHAI VEUVES ET INVALIDES
+EL HADDAD ALI;212668368971;14/10/2025;2449.6;Rapport médecin reçu;MHAI ACTIFS
+NAIT SAGHIR EL HOUSSAIN;212655619592;03/10/2025;2000,00;facture globale avec compte rendu;MHAI ACTIFS
+BENNASSER ABDERRAHIM;212673601697;02/10/2025;400,00;Soumis pour mise à jour affiliation;MHAI ACTIFS
+harri abdellah;212668131388;21/09/2025;585.8;Soumis pour mise à jour affiliation;MHAI ACTIFS
+EL BOURAKKADI AHMED;212650637099;01/10/2025;1000,00;Justificatifs de non d'accouchement par césarienne;MHAI ACTIFS
+OUGZIMEN EL HASSAN;212668791874;06/10/2025;505,00;Une facture détaillée de la pharmacie.;MHAI ACTIFS
+RIZQUI DRISS ;212673840263;09/10/2025;1001.5;- Une facture détaillée de l'acte effectué;MHAI VEUVES ET INVALIDES
+MAHRAR MOHAMED ;212667324969;10/10/2025;10700,00;Manque relevé d'identité bancaire (RIB);MHAI VEUVES ET INVALIDES
+HIMANE SMAIL;212767578140;27/09/2025;2645,00;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI ACTIFS
+EL MIR MOHAMED;212697439062;20/10/2025;2500,00;Document reçu et déposé pour étude;MHAI ACTIFS
+BENNINI ABDELKADER;212602371307;02/10/2025;372,00;Les photocopies des pièces justificatives;MHAI ACTIFS
+EL HAMIOUI AHMED;212664576993;03/11/2025;5700,00;dossier  illisible  merci de  m'envoyer  la fiche  médicale;MHAI ACTIFS
+OUHAMCHA EL-HOUCINE;212637041639;28/10/2025;1100,00;Une facture détaillée et acquittée de l'opticien.;MHAI ACTIFS
+AAYATE MOHAMED;212668093163;12/09/2025;683.1;Soumis pour mise à jour affiliation;MHAI ACTIFS
+EL ABDELLAOUI MHAMMED ;212661251253;31/10/2025;3400,00;Soumis pour mise à jour affiliation;MHAI VEUVES ET INVALIDES
+BEN ZARI SAADIA ;212696517648;03/10/2025;664.5;Un certificat de scolarité de l'année en cours.;MHAI VEUVES ET INVALIDES
+EL HAIMER FATTOUMA ;212663038129;01/09/2025;761.5;Manque relevé d'identité bancaire (RIB);MHAI VEUVES ET INVALIDES
+MOUBSIT BRAHIM;212678134284;03/10/2025;10140.8;Rapport médecin reçu;MHAI ACTIFS
+ALOU MOFADAL ;212626803858;21/10/2025;297,00;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI VEUVES ET INVALIDES
+BOUDHINE LARBI;212645415183;02/10/2025;1269.8;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+ECH-CHMALI MOHAMMED;212618115062;20/09/2025;5000,00;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+BOUGAJDI  LAHOUSSEIN;212672578255;01/10/2025;300,00;Les causes. circonstances. date. lieu et heure de l'accident provoquant;MHAI ACTIFS
+NEMROUCH RACHID;212632502351;07/10/2025;317.4;L'original de la declaration maladie et des pièces justificatives;MHAI ACTIFS
+ASSEM ABDELOUAHED;212669823434;20/10/2025;1000,00;une justificatif de non accouchement par césarienne;MHAI ACTIFS
+BYDAR LARBI;212666948014;09/10/2025;240,00;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+KABORI EL MAATI;212643929653;21/09/2025;1077.2;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+elabderrahmani abdelkarim;212661653838;19/09/2025;200,00;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+BOUJOUJ OMAR;212618086558;29/08/2025;800.9;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+EDDAHBI MOHAMMED;212680029727;13/10/2025;1531,00;Les photocopies des pièces justificatives;MHAI ACTIFS
+EL-MEJDQI AHMED;212665687054;07/10/2025;28955.47;le compte rendu d'hospitalisation;MHAI ACTIFS
+FAIK ABDELRHANI;212600417064;03/08/2025;10000,00;L'original de la declaration maladie et des pièces justificatives;MHAI ACTIFS
+MESBAHI EL MEHDI;212666287929;21/10/2025;1039,00;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+EL OUAZANI ADIL;212668884225;20/10/2025;706.5;Une facture détaillée de la pharmacie.;MHAI ACTIFS
+SOUMMER BOUCHETA;212694194821;03/09/2025;700.1;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+BOUJDAR SALAH ;212654264989;06/10/2025;1524,00;Un certificat de scolarité de l'année en cours.;MHAI VEUVES ET INVALIDES
+EL MASAOUDI ABDESSALAM ;212641948102;25/08/2025;2234.06;illisible .;MHAI VEUVES ET INVALIDES
+STOUT EL HASSAN ;212621490757;13/10/2025;1100,00;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI VEUVES ET INVALIDES
+GHANEM MOHAMMED;212670330962;11/09/2025;14542.98;Soumis pour mise à jour affiliation;MHAI ACTIFS
+SALSIL KHADIJA ;212610885534;24/09/2025;456.8;Les photocopies des pièces justificatives la feuille des soins .;MHAI VEUVES ET INVALIDES
+BGHACH ABDELLAH;212613718787;03/10/2025;900,00;la facture est illisible;MHAI ACTIFS
+ADDI ARAFA;212678252892;09/07/2025;1000,00;Justificatifs de non d'accouchement par césarienne;MHAI ACTIFS
+ABAID OMAR;212668594711;26/09/2025;1235.6;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+OUASSAA ABDELLAH;212616429942;28/08/2025;925,00;Un certificat de scolarité de l'année en cours.;MHAI ACTIFS
+AIT HAMMOU ALI;212678127503;01/08/2025;800,00;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI ACTIFS
+KHAKLIE MOHAMED;212641626068;27/10/2025;1000,00;Justifiant l accouchement normal et non par césarienne.;MHAI ACTIFS
+elhabib assam;212766710315;20/09/2025;13500,00;Rapport médecin reçu;MHAI ACTIFS
+AKHARBACH ISSA;212671029298;02/10/2025;1000,00;une justificatif de non accouchement par césarienne;MHAI ACTIFS
+BZIOUA HALIMA ;212698992951;23/10/2025;357,00;Facture et résultat des analyses justifiant le montant 180 dhs .;MHAI VEUVES ET INVALIDES
+ETTAQY OMAR;212672786561;01/10/2025;720,00;bonjour docteur . la cotation svp;MHAI ACTIFS
+EL FEZZAZI AHMED ;212690408576;23/10/2025;600,00;La photocopie du dossier médical ayant fait l'objet de remboursement;MHAI VEUVES ET INVALIDES
+ZAABOUL MOHAMED ;212664678299;17/10/2025;2062,00;Les photocopies des pièces justificatives;MHAI VEUVES ET INVALIDES
+EL ASSARI ABDELAZIZ ;212671489251;06/10/2025;49922.97;Rapport médecin reçu;MHAI VEUVES ET INVALIDES
+SLASSI TAYEB ;212669551261;28/10/2025;2000,00;L'original de la declaration maladie et des pièces justificatives;MHAI VEUVES ET INVALIDES
+AHANSAL ABDERRAHMANE;212678579388;24/09/2025;1920,00;Les photocopies des pièces justificatives;MHAI ACTIFS
+EL GOUNNOUNI MOHAMED ;212678729767;26/09/2025;14626.13;la facture d'hospitalisation;MHAI VEUVES ET INVALIDES
+AYTE BALIDE MOHAMADE ;212693311106;17/10/2025;13615.83;Document reçu et déposé pour étude;MHAI VEUVES ET INVALIDES
+ES SAFAOUY KHALID;212662766153;09/08/2025;10199.68;Document reçu et déposé pour étude;MHAI ACTIFS
+KHARBOUCHE ELBACHIR;212710057398;21/10/2025;3523.5;dossier lisible;MHAI ACTIFS
+OUFATTOLE EL MUSTAPHA;212615454878;07/10/2025;906.1;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+BAZHAR OMAR;212622633243;11/09/2025;1000,00;justifiant l'accouchement normal et non par césarienne .;MHAI ACTIFS
+TOUAF  MOHAMMED;212623696773;27/10/2025;420,00;Soumis pour mise à jour affiliation;MHAI ACTIFS
+ELGATAA ELHABIB;212666187914;16/09/2025;1260,00;Soumis pour mise à jour affiliation;MHAI ACTIFS
+BENZIANE AHMED;212655159330;30/09/2025;1300.7;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+LATIF MOHAMMED;212663291606;30/09/2025;3120,00;compte rendu d hospitalisation;MHAI ACTIFS
+OUCHRIF ABDELLAH;212613203511;18/09/2025;899,00;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+AIT CHAFIA EL HASSAN;212631921772;11/10/2025;847.8;Manque relevé d'identité bancaire (RIB);MHAI ACTIFS
+CHARJAOUI REDOUANE;212631773542;16/09/2025;1000,00;une justificatif de non accouchement par césarienne;MHAI ACTIFS
+CHYHAB JAMAA;212611802259;09/10/2025;6500,00;Document reçu et déposé pour étude;MHAI ACTIFS
+RACHIDI CHERKI;212699739433;20/10/2025;4000,00;Document reçu et déposé pour étude;MHAI ACTIFS
+EL AACHI MOHAMED ;212671775248;27/10/2025;3033.6;Manque relevé d'identité bancaire (RIB);MHAI VEUVES ET INVALIDES
+EL OGRI MOHAMED;212666719462;29/10/2025;760.5;L'ordonnance médicale délivrée lors de la consultation prix bien lisible;OFFICE NATIONAL DES AEROPORTS
+KHITI TAIEB;212666050921;16/10/2025;2529.6;"L'attestation de scolarité; Age limite de la prestation atteint 2025/2026";OFFICE NATIONAL DES AEROPORTS
+EL OUAZZANI SIDI AHMED;212656586983;14/10/2025;828,00;"L'attestation de scolarité; Age limite de la prestation atteint 2025/2026";OFFICE NATIONAL DES AEROPORTS
+FARHAT MUSTAPHA;212662761989;20/09/2025;1309.4000000000001;La copie du dossier déposé au régime de base (dossier entier);OFFICE NATIONAL DES AEROPORTS
+EL OUAZZANI SIDI AHMED;212656586983;03/11/2025;678.9;L'extrait d'acte de naissance de l'enfant …….RAZAN;OFFICE NATIONAL DES AEROPORTS
+ALLA HAJAR;212636502288;28/10/2025;1316.2;La copie du dossier déposé au régime de base (dossier entier complet);OFFICE NATIONAL DES AEROPORTS
+BOUABDILLAH ADIL;212669340511;30/09/2025;400,00;"L'attestation de scolarité; Age limite de la prestation atteint 2025/2026";OFFICE NATIONAL DES AEROPORTS
+MANNANE QAMAR;212682980095;25/10/2025;774.5;La copie du dossier déposé au régime de base (MANNANE QAMAR (Actif );OFFICE NATIONAL DES AEROPORTS
+BOUTALEB LALLA SANAE;212660100662;01/11/2025;1457.2;La copie du dossier déposé au régime de base;OFFICE NATIONAL DES AEROPORTS
+STITOU MOHAMED;212700756971;25/10/2025;7175.44;L'extrait d'acte de naissance du nouveau-né;OFFICE NATIONAL DES AEROPORTS
+TAISSI ABDELFATTAH;212605078698;10/10/2025;1163.6;La nature de l'acte pratiqué 400;OFFICE NATIONAL DES AEROPORTS
+OUTADA ISMAIL;212661645807;25/10/2025;1637.9;L'ordonnance médicale délivrée lors de la consultation du 25/08/2025 LES PRIX LISIBLE;OFFICE NATIONAL DES AEROPORTS
+HASSINI HIND;212695129167;15/10/2025;400,00;La copie du dossier déposé au régime de base;OFFICE NATIONAL DES AEROPORTS
+LAFRIKH AYOUB;212708872764;10/09/2025;4800,00;La facture détaillée;OFFICE NATIONAL DES AEROPORTS
+TAYBI ABDELLAH;212670897927;18/08/2025;594.9;Le décompte de remboursement de base;OFFICE NATIONAL DES AEROPORTS
+EL KHALIDY MOHAMED;212661993219;25/08/2025;3957.48;Le compte rendu de l'acte pratiqué  (hospitalisation);OFFICE NATIONAL DES AEROPORTS
+LAFRIKH AYOUB;212708872764;21/10/2025;7795,00;L'ordonnance médicale délivrée lors de la consultation prix bien lisible;OFFICE NATIONAL DES AEROPORTS
+AIT EL QALEB YOUSSEF;212660232144;19/08/2025;4102.8999999999996;La copie du dossier déposé au régime de base (dossier entier;OFFICE NATIONAL DES AEROPORTS
+EL ADDALI AMAL;212660100031;10/10/2025;1200,00;"Les identifiants du médecin traitant (cachet avec nom. prénom et adresse)
+La facture des soins réalisés";OFFICE NATIONAL DES AEROPORTS
+AKTAOU MOHAMED;212660100010;09/09/2025;702.6;"L'attestation de scolarité; Age limite de la prestation atteint 2025/2026";OFFICE NATIONAL DES AEROPORTS
+EL BAH RACHID;212694702216;02/09/2025;959,00;"L'attestation de scolarité; Age limite de la prestation atteint 2025/2025";OFFICE NATIONAL DES AEROPORTS
+SOUABNI ABDELALI;212663753994;29/04/2025;3633.2;La copie du dossier déposé au régime de base;OFFICE NATIONAL DES AEROPORTS
+KAMAL ABDENACEUR;212694702379;29/09/2025;360,00;"L'attestation de scolarité; Age limite de la prestation atteint 2025-2026";OFFICE NATIONAL DES AEROPORTS
+NASRAOUI MOHAMED;212660100329;10/09/2025;1100,00;"L'attestation de scolarité; Age limite de la prestation atteint 2025/2026";OFFICE NATIONAL DES AEROPORTS
+BOUILLILITEN ALI;212670603880;15/09/2025;2678.8;L'ordonnance médicale délivrée lors de la consultation du 16.09.2025;OFFICE NATIONAL DES AEROPORTS
+LHBIBANI KHADIJA;212667817864;18/07/2025;545,00;"L'attestation de scolarité; Age limite de la prestation atteint";OFFICE NATIONAL DES AEROPORTS
+BOUKHARI KAWTAR;212660100326;19/06/2025;58620000000000000,00;La copie du dossier déposé au régime de base;OFFICE NATIONAL DES AEROPORTS
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
