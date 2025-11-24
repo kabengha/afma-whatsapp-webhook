@@ -1,4 +1,4 @@
-﻿full.name.adherent;Num tele;D.Consultation;Frais Engagé;Observation;Nom.Client
+full.name.adherent;Num tele;D.Consultation;Frais,Engagés;Observation;Nom.Client
 AAOU Chahrazade;212611126565;20/11/2025;250;La prescription médicale des examens lisible ;LA FRATERNELLE DE LA GENDARMERIE ROYALE
 ZAHID Hassan;212671229939;19/11/2025;160;La nature des soins dentaires justifiant la radio panoramique;LA FRATERNELLE DE LA GENDARMERIE ROYALE
 EL BAHRI El mahjoub;212661295754;30/09/2025;500;L'attestation de scolarité 2025/2026;LA FRATERNELLE DE LA GENDARMERIE ROYALE
@@ -86,4 +86,5 @@ EL BOUAZZAOUI MOHAMMED;212667875895;30/10/2025;35000.00;FACTURE TIERS PAYANT REC
 EL JAOUHARI MOHAMED;212671395933;19/11/2025;12200;La lettre de PEC CNOPS;OFFICE NATIONAL DES AEROPORTS
 QTYAB SAAD;212662016523;30/10/2025;27628.3;Le décompte de remboursement de base;OFFICE NATIONAL DES AEROPORTS
 DAROUI RABIA;212694702239;17/09/2025;3421.1;"L'attestation de scolarité; Age limite de la prestation atteint 2025/2026";OFFICE NATIONAL DES AEROPORTS
+
 STITOU MOHAMED;212700756971;11/10/2025;6561.5;Le compte rendu de l'acte pratiqué  ( hospitalisation);OFFICE NATIONAL DES AEROPORTS
