@@ -1,4 +1,4 @@
-﻿full.name.adherent;Num tele;D.Consultation;Frais Engagé;Observation;Nom.Client
+full.name.adherent;Num tele;D.Consultation;Frais,Engagés;Observation;Nom.Client
 KHOLTI Brahim;212614354575;22/11/2025;1000;Le pli confidentiel détaillant la nature de la maladie;LA FRATERNELLE DE LA GENDARMERIE ROYALE
 EL YADARI Hamza;212621830678;21/11/2025;250;Les causes et les circonstances de l'accident/traumatisme;LA FRATERNELLE DE LA GENDARMERIE ROYALE
 EL MEZIANI Ibtissam;212701187912;15/11/2025;250;Un devis chiffré;LA FRATERNELLE DE LA GENDARMERIE ROYALE
@@ -233,4 +233,5 @@ BOUASSEL JALAL                          ;212672096797;15/10/2025;700;La nature e
 BOUASSEL JALAL                          ;212672096797;22/10/2025;700;La nature exacte de la maladie.                                                                                                                                                                                                                                                                             ;ADMINISTRATION GENERALE DU MINISTERE DE L'INTERIEUR
 EL MJIDI MOHAMED                        ;212673203662;27/09/2025;1859.9;Manque relevé d'identité bancaire (RIB)                                                                                                                                                                                                                                                                     ;ADMINISTRATION GENERALE DU MINISTERE DE L'INTERIEUR
 TANJABA ABDELOUAHID                     ;212677332527;18/09/2025;603.13;Le compte rendu d'hospitalisation.                                                                                                                                                                                                                                                                          ;ADMINISTRATION GENERALE DU MINISTERE DE L'INTERIEUR
+
 RADDI RACHID                            ;212697326665;20/10/2025;1467.3;Une copie de l'acte de mariage.                                                                                                                                                                                                                                                                             ;FONDATION HASSAN II
