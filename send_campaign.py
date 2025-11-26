@@ -14,8 +14,9 @@ WHATSAPP_SENDER = os.getenv("INFOBIP_WHATSAPP_SENDER", "212700049292")
 TEMPLATE_NAME = os.getenv("INFOBIP_TEMPLATE_NAME", "complement_requis_afma_v3")
 TEMPLATE_LANGUAGE = os.getenv("INFOBIP_TEMPLATE_LANGUAGE", "fr")
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PRICE_CACHE_FILE = os.path.join(BASE_DIR, "infobip_price.json")
 
-PRICE_CACHE_FILE = "infobip_price.json"
 
 # Valeurs par défaut pour l’exécution en ligne de commande
 DEFAULT_CSV_FILE = "campagne_adherents_infobip-test2.csv"
@@ -37,10 +38,12 @@ def get_current_price_from_webhook_file() -> float:
     Retourne 0.0 si le fichier n'existe pas ou est invalide.
     """
     if not os.path.exists(PRICE_CACHE_FILE):
+        print(f"[PRICE] Fichier prix introuvable: {PRICE_CACHE_FILE}")
         return 0.0
     try:
         with open(PRICE_CACHE_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
+        print(f"[PRICE] Contenu lu dans {PRICE_CACHE_FILE}: {data}")
         val = data.get("pricePerMessage")
         if val is None:
             return 0.0
@@ -147,6 +150,7 @@ def send_template_message(
     # reçu via le webhook (infobip_price.json)
     if cout == 0.0:
         auto_price = get_current_price_from_webhook_file()
+        print(f"[PRICE] cout initial=0.0, auto_price lu={auto_price}")
         if auto_price > 0:
             cout = auto_price
             print(f"[PRICE] Prix automatique utilisé depuis webhook: {cout}")

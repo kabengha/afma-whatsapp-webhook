@@ -24,7 +24,7 @@ from salesforce_client import (
     update_case_status,
     SalesforceError,
 )
-from send_campaign import run_campaign  # 👈 nouvelle import
+from send_campaign import run_campaign, PRICE_CACHE_FILE   # 👈 nouvelle import
 
 app = Flask(__name__)
 
@@ -379,7 +379,7 @@ def login():
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-          background: linear-gradient(135deg, #0076bf, #00a0e3);
+          background: white;
           min-height: 100vh;
           display: flex;
           align-items: center;
@@ -569,10 +569,7 @@ def login():
           </div>
 
           <div class="remember-row">
-            <label>
-              <input type="checkbox" checked disabled>
-              Se souvenir de moi
-            </label>
+             
             <span>Accès interne AFMA</span>
           </div>
 
@@ -723,8 +720,9 @@ def dashboard():
         .grid {
           display: grid;
           grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr);
-          gap: 20px;
+          gap: 9px;
           align-items: flex-start;
+          justify-items: start;
         }
         @media (max-width: 900px) {
           .grid {
@@ -748,14 +746,20 @@ def dashboard():
           margin-bottom: 18px;
         }
         .upload-zone {
-          border-radius: 16px;
-          border: 1.5px dashed #99c2e3;
-          background: #f8fbff;
-          padding: 22px 18px;
-          text-align: center;
-          cursor: pointer;
-          position: relative;
-          overflow: hidden;
+          display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+
+            border: 2px dashed #bdd8f3;
+            border-radius: 18px;
+
+            padding: 30px 20px;
+            cursor: pointer;
+            background: #f5faff;
+
+            transition: 0.2s ease;
         }
         .upload-zone:hover {
           border-color: #0076bf;
@@ -781,6 +785,11 @@ def dashboard():
         .upload-sub {
           font-size: 12px;
           color: #6b7b8c;
+        }
+        .btn-area {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
         }
         .btn-run {
           margin-top: 16px;
@@ -906,17 +915,19 @@ def dashboard():
                 <input type="file" name="csv_file" accept=".csv" required>
               </label>
 
+            <div class="btn-area">
               <button type="submit" class="btn-run">
                 <span class="icon">▶️</span>
                 <span>Lancer la campagne</span>
               </button>
+              </div>
             </form>
           </section>
 
           <!-- Colonne droite : historique -->
           <section class="card">
-            <h2>Historique des campagnes</h2>
-            <p class="desc">Dernières campagnes et rapports d’envoi.</p>
+            <h2>Rapport campagne</h2>
+        
 
             {% if history %}
               <div class="table-wrapper">
@@ -1083,8 +1094,9 @@ def infobip_webhook():
                         "currency": currency,
                         "updatedAt": done_at,
                     }
-                    with open("infobip_price.json", "w", encoding="utf-8") as pf:
+                    with open(PRICE_CACHE_FILE, "w", encoding="utf-8") as pf:
                         json.dump(price_data, pf, ensure_ascii=False)
+                    print(f"[COST] Fichier prix écrit dans {PRICE_CACHE_FILE}")
                     print(f"[COST] Prix actuel mis à jour: {price_data}")
             except Exception as e:
                 print(f"[COST][ERROR] Impossible de logguer le prix: {e}")
