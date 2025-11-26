@@ -14,6 +14,9 @@ WHATSAPP_SENDER = os.getenv("INFOBIP_WHATSAPP_SENDER", "212700049292")
 TEMPLATE_NAME = os.getenv("INFOBIP_TEMPLATE_NAME", "complement_requis_afma_v3")
 TEMPLATE_LANGUAGE = os.getenv("INFOBIP_TEMPLATE_LANGUAGE", "fr")
 
+
+PRICE_CACHE_FILE = "infobip_price.json"
+
 # Valeurs par défaut pour l’exécution en ligne de commande
 DEFAULT_CSV_FILE = "campagne_adherents_infobip-test2.csv"
 DEFAULT_REPORT_FILE = "rapport_envoi_detaille.csv"
@@ -27,12 +30,32 @@ REQUIRED_COLUMNS = [
 ]
 
 
+def get_current_price_from_webhook_file() -> float:
+    """
+    Lit le dernier prix par message enregistré par le webhook Infobip
+    dans infobip_price.json.
+    Retourne 0.0 si le fichier n'existe pas ou est invalide.
+    """
+    if not os.path.exists(PRICE_CACHE_FILE):
+        return 0.0
+    try:
+        with open(PRICE_CACHE_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        val = data.get("pricePerMessage")
+        if val is None:
+            return 0.0
+        return float(val)
+    except Exception as e:
+        print(f"[PRICE][WARN] Impossible de lire {PRICE_CACHE_FILE}: {e}")
+        return 0.0
+
 def clean_placeholder(value: str) -> str:
     if not value:
         return ""
     value = value.replace("\n", " ").replace("\r", " ").replace("\t", " ")
     value = re.sub(r"\s{2,}", " ", value)
     return value.strip()
+
 
 
 def send_template_message(
@@ -42,6 +65,16 @@ def send_template_message(
     frais_engages: str,
     observation: str,
 ):
+    """
+    Envoie UN message template WhatsApp pour UNE ligne du fichier.
+    Retourne :
+      - status_code (int)
+      - api_status ("OK" ou "ERROR")
+      - message_id (str ou "")
+      - cout (float ou 0.0)
+      - error_text (str ou "")
+    """
+
     url = f"{INFOBIP_BASE_URL}/whatsapp/1/message/template"
 
     headers = {
@@ -50,16 +83,17 @@ def send_template_message(
         "Accept": "application/json",
     }
 
+    # Nettoyage pour respecter les règles d’Infobip
     nom_adherent = clean_placeholder(nom_adherent)
     date_consultation = clean_placeholder(date_consultation)
     frais_engages = clean_placeholder(frais_engages)
     observation = clean_placeholder(observation)
 
     placeholders = [
-        nom_adherent,
-        date_consultation,
-        frais_engages,
-        observation,
+        nom_adherent,       # {{1}}
+        date_consultation,  # {{2}}
+        frais_engages,      # {{3}}
+        observation,        # {{4}}
     ]
 
     payload = {
@@ -89,25 +123,35 @@ def send_template_message(
     cout = 0.0
     error_text = ""
 
+    # On essaie de lire la réponse JSON proprement
     try:
         data = resp.json()
     except Exception:
         data = {}
 
-    # 🔍 Debug une fois pour voir la vraie structure
+    # Debug pour voir la structure réelle (tu l'as déjà vu dans les logs)
     print("[DEBUG] Réponse Infobip brute:", json.dumps(data, indent=2, ensure_ascii=False))
 
+    # Tentative de récupérer un prix directement dans la réponse d'envoi (au cas où Infobip le rajoute un jour)
     try:
         msg_obj = (data.get("messages") or [{}])[0]
         price_obj = msg_obj.get("price") or {}
-        # Essaie plusieurs clés possibles
-        for key in ("pricePerMessage", "pricePerMessageUsd", "price"):
-            if key in price_obj and price_obj[key] is not None:
-                cout = float(price_obj[key])
-                break
+        cout_val = price_obj.get("pricePerMessage")
+        if cout_val is not None:
+            cout = float(cout_val)
         message_id = msg_obj.get("messageId") or ""
     except Exception:
         pass
+
+    # 💰 Si l'API ne renvoie pas de prix, on utilise le dernier prix réel
+    # reçu via le webhook (infobip_price.json)
+    if cout == 0.0:
+        auto_price = get_current_price_from_webhook_file()
+        if auto_price > 0:
+            cout = auto_price
+            print(f"[PRICE] Prix automatique utilisé depuis webhook: {cout}")
+        else:
+            print("[PRICE] Aucun prix trouvé dans le webhook, coût reste à 0.0")
 
     if api_status == "OK":
         print(f"[OK] Message envoyé. messageId={message_id} coût={cout}")
@@ -116,6 +160,8 @@ def send_template_message(
         print(f"[ERROR] {status_code} - {error_text}")
 
     return status_code, api_status, message_id, cout, error_text
+
+
 
 
 def run_campaign(csv_path: str, report_path: str) -> dict:

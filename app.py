@@ -50,6 +50,9 @@ INFOBIP_API_KEY = os.getenv("INFOBIP_API_KEY")
 INFOBIP_BASE_URL = os.getenv("INFOBIP_BASE_URL", "https://m3n6y4.api.infobip.com")
 INFOBIP_WHATSAPP_SENDER = os.getenv("INFOBIP_WHATSAPP_SENDER", "212700049292")
 
+
+AFMA_LOGO_URL = os.getenv("AFMA_LOGO_URL", "https://afma.ma/wp-content/uploads/2023/02/AFMA.png")
+
 # ============================
 #  Base de données campagne (CSV)
 # ============================
@@ -368,30 +371,220 @@ def login():
 
     html = """
     <!doctype html>
-    <html>
-    <head><title>Login campagne WhatsApp</title></head>
+    <html lang="fr">
+    <head>
+      <meta charset="utf-8">
+      <title>AFMA | Console WhatsApp</title>
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          background: linear-gradient(135deg, #0076bf, #00a0e3);
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #1b3b5a;
+        }
+        .card {
+          background: #ffffff;
+          width: 100%;
+          max-width: 420px;
+          border-radius: 18px;
+          padding: 32px 28px 28px;
+          box-shadow: 0 18px 35px rgba(0,0,0,0.18);
+        }
+        .logo-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-bottom: 24px;
+        }
+        .logo-img {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          background: #e6f3ff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          margin-bottom: 8px;
+        }
+        .logo-img img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+        }
+        .logo-fallback {
+          font-size: 28px;
+          font-weight: 600;
+          color: #0076bf;
+        }
+        h1 {
+          font-size: 22px;
+          margin-bottom: 4px;
+          text-align: center;
+          color: #004a7f;
+        }
+        .subtitle {
+          font-size: 13px;
+          text-align: center;
+          color: #6b7b8c;
+          margin-bottom: 24px;
+        }
+        .field {
+          margin-bottom: 16px;
+        }
+        label {
+          font-size: 13px;
+          color: #4b5c70;
+          display: block;
+          margin-bottom: 6px;
+        }
+        .input-wrapper {
+          display: flex;
+          align-items: center;
+          border: 1px solid #c7d8ea;
+          border-radius: 999px;
+          padding: 0 12px;
+          background: #f8fbff;
+        }
+        .input-wrapper span.icon {
+          font-size: 16px;
+          margin-right: 8px;
+          color: #0076bf;
+        }
+        .input-wrapper input {
+          border: none;
+          outline: none;
+          background: transparent;
+          padding: 10px 4px;
+          width: 100%;
+          font-size: 14px;
+          color: #1b3b5a;
+        }
+        .input-wrapper input::placeholder {
+          color: #9aadbf;
+        }
+        .remember-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 20px;
+          font-size: 12px;
+          color: #6b7b8c;
+        }
+        .remember-row label {
+          display: flex;
+          align-items: center;
+          margin-bottom: 0;
+          cursor: pointer;
+        }
+        .remember-row input[type="checkbox"] {
+          margin-right: 6px;
+        }
+        .btn-primary {
+          width: 100%;
+          border: none;
+          border-radius: 999px;
+          padding: 11px 16px;
+          font-size: 15px;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+          background: #0076bf;
+          color: #ffffff;
+          cursor: pointer;
+          box-shadow: 0 8px 16px rgba(0,118,191,0.35);
+          transition: transform 0.05s ease-out, box-shadow 0.05s ease-out, background 0.2s;
+        }
+        .btn-primary:hover {
+          background: #005e9b;
+          transform: translateY(-1px);
+          box-shadow: 0 10px 20px rgba(0,94,155,0.35);
+        }
+        .btn-primary:active {
+          transform: translateY(0);
+          box-shadow: 0 6px 12px rgba(0,94,155,0.35);
+        }
+        .messages {
+          margin-bottom: 12px;
+        }
+        .messages li {
+          list-style: none;
+          font-size: 13px;
+          color: #d72638;
+          background: #ffe6ea;
+          border-radius: 10px;
+          padding: 8px 10px;
+          margin-bottom: 4px;
+        }
+        .footer-note {
+          margin-top: 18px;
+          text-align: center;
+          font-size: 11px;
+          color: #9aadbf;
+        }
+      </style>
+    </head>
     <body>
-      <h1>Login</h1>
-      {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul>
-        {% for category, msg in messages %}
-          <li style="color:red;">{{ msg }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-      {% endwith %}
-      <form method="post">
-        <label>Utilisateur:</label>
-        <input type="text" name="username"><br>
-        <label>Mot de passe:</label>
-        <input type="password" name="password"><br><br>
-        <button type="submit">Se connecter</button>
-      </form>
+      <div class="card">
+        <div class="logo-wrapper">
+          <div class="logo-img">
+            {% if afma_logo_url %}
+              <img src="{{ afma_logo_url }}" alt="AFMA">
+            {% else %}
+              <div class="logo-fallback">AF</div>
+            {% endif %}
+          </div>
+          <h1>Console WhatsApp AFMA</h1>
+          <p class="subtitle">Accès sécurisé à l’outil de campagne</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="messages">
+          {% for category, msg in messages %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+          </ul>
+        {% endif %}
+        {% endwith %}
+
+        <form method="post">
+          <div class="field">
+            <label for="username">Utilisateur</label>
+            <div class="input-wrapper">
+              <span class="icon">👤</span>
+              <input id="username" type="text" name="username" placeholder="Votre identifiant" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="password">Mot de passe</label>
+            <div class="input-wrapper">
+              <span class="icon">🔒</span>
+              <input id="password" type="password" name="password" placeholder="Votre mot de passe" required>
+            </div>
+          </div>
+
+          <div class="remember-row">
+            <label>
+              <input type="checkbox" checked disabled>
+              Se souvenir de moi
+            </label>
+            <span>Accès interne AFMA</span>
+          </div>
+
+          <button type="submit" class="btn-primary">Se connecter</button>
+        </form>
+
+        <p class="footer-note">AFMA – Outil interne de campagne WhatsApp</p>
+      </div>
     </body>
     </html>
     """
-    return render_template_string(html)
+    return render_template_string(html, afma_logo_url=AFMA_LOGO_URL)
 
 
 @app.route("/logout")
@@ -430,73 +623,356 @@ def dashboard():
 
     html = """
     <!doctype html>
-    <html>
+    <html lang="fr">
     <head>
-      <title>Console campagne WhatsApp AFMA</title>
+      <meta charset="utf-8">
+      <title>AFMA | Campagnes WhatsApp</title>
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          background: #f3f7fb;
+          color: #1b3b5a;
+          padding: 24px;
+        }
+        .shell {
+          max-width: 1100px;
+          margin: 0 auto;
+        }
+        .topbar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 24px;
+        }
+        .topbar-left {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .logo-small {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #0076bf, #00a0e3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+        .logo-small img {
+          max-width: 90%;
+          max-height: 90%;
+          object-fit: contain;
+          background: transparent;
+        }
+        .logo-small-fallback {
+          font-size: 20px;
+          font-weight: 600;
+          color: #ffffff;
+        }
+        .title-main {
+          font-size: 22px;
+          font-weight: 600;
+          color: #004a7f;
+        }
+        .title-sub {
+          font-size: 13px;
+          color: #6b7b8c;
+        }
+        .user-chip {
+          font-size: 13px;
+          padding: 8px 14px;
+          border-radius: 999px;
+          background: #ffffff;
+          border: 1px solid #c7d8ea;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .user-chip span.icon {
+          font-size: 16px;
+        }
+        .logout-link {
+          margin-left: 12px;
+          font-size: 12px;
+          color: #d72638;
+          text-decoration: none;
+        }
+        .logout-link:hover {
+          text-decoration: underline;
+        }
+        .messages {
+          margin-bottom: 16px;
+        }
+        .messages li {
+          list-style: none;
+          font-size: 13px;
+          padding: 8px 10px;
+          border-radius: 10px;
+          margin-bottom: 6px;
+        }
+        .messages li.error {
+          background: #ffe6ea;
+          color: #d72638;
+        }
+        .messages li.success {
+          background: #e3f6e8;
+          color: #207b3c;
+        }
+        .grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr);
+          gap: 20px;
+          align-items: flex-start;
+        }
+        @media (max-width: 900px) {
+          .grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        .card {
+          background: #ffffff;
+          border-radius: 16px;
+          padding: 20px 22px 18px;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+        }
+        .card h2 {
+          font-size: 18px;
+          margin-bottom: 6px;
+          color: #004a7f;
+        }
+        .card p.desc {
+          font-size: 13px;
+          color: #6b7b8c;
+          margin-bottom: 18px;
+        }
+        .upload-zone {
+          border-radius: 16px;
+          border: 1.5px dashed #99c2e3;
+          background: #f8fbff;
+          padding: 22px 18px;
+          text-align: center;
+          cursor: pointer;
+          position: relative;
+          overflow: hidden;
+        }
+        .upload-zone:hover {
+          border-color: #0076bf;
+          background: #f2f7ff;
+        }
+        .upload-zone input[type="file"] {
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          cursor: pointer;
+        }
+        .upload-icon {
+          font-size: 30px;
+          margin-bottom: 8px;
+          color: #0076bf;
+        }
+        .upload-title {
+          font-size: 14px;
+          font-weight: 600;
+          color: #004a7f;
+          margin-bottom: 4px;
+        }
+        .upload-sub {
+          font-size: 12px;
+          color: #6b7b8c;
+        }
+        .btn-run {
+          margin-top: 16px;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          border: none;
+          border-radius: 999px;
+          padding: 9px 18px;
+          background: #0076bf;
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          box-shadow: 0 6px 14px rgba(0,118,191,0.35);
+        }
+        .btn-run span.icon {
+          font-size: 16px;
+        }
+        .btn-run:hover {
+          background: #005e9b;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 13px;
+        }
+        th, td {
+          padding: 8px 10px;
+          text-align: left;
+          border-bottom: 1px solid #e0e7f1;
+        }
+        th {
+          font-size: 12px;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          color: #6b7b8c;
+          background: #f3f7fb;
+        }
+        tr:hover td {
+          background: #f8fbff;
+        }
+        .badge-ok {
+          display: inline-block;
+          padding: 3px 8px;
+          border-radius: 999px;
+          background: #e3f6e8;
+          color: #207b3c;
+          font-size: 11px;
+        }
+        .badge-error {
+          display: inline-block;
+          padding: 3px 8px;
+          border-radius: 999px;
+          background: #ffe6ea;
+          color: #d72638;
+          font-size: 11px;
+        }
+        .report-link a {
+          color: #0076bf;
+          text-decoration: none;
+          font-weight: 500;
+        }
+        .report-link a:hover {
+          text-decoration: underline;
+        }
+        .empty-state {
+          font-size: 13px;
+          color: #8a9ab0;
+          padding: 12px 4px 4px;
+        }
+      </style>
     </head>
     <body>
-      <h1>Campagnes WhatsApp AFMA</h1>
-      <p>Connecté en tant que {{ session.username }}</p>
-      <p><a href="{{ url_for('logout') }}">Se déconnecter</a></p>
-
-      {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul>
-        {% for category, msg in messages %}
-          <li style="color:{% if category == 'error' %}red{% else %}green{% endif %};">
-            {{ msg }}
-          </li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-      {% endwith %}
-
-      <h2>Lancer une nouvelle campagne</h2>
-      <form method="post" action="{{ url_for('run_campaign_route') }}" enctype="multipart/form-data">
-        <label>Fichier CSV de campagne :</label>
-        <input type="file" name="csv_file" accept=".csv" required>
-        <br><br>
-        <button type="submit">Lancer la campagne</button>
-      </form>
-
-      <hr>
-      <h2>Historique des campagnes</h2>
-      {% if history %}
-        <table border="1" cellpadding="5">
-          <tr>
-            <th>Date/heure</th>
-            <th>CSV</th>
-            <th>Rapport</th>
-            <th>Lignes avec numéro</th>
-            <th>OK</th>
-            <th>Erreurs</th>
-            <th>Coût total</th>
-          </tr>
-          {% for h in history %}
-          <tr>
-            <td>{{ h.timestamp }}</td>
-            <td>{{ h.csv_name }}</td>
-            <td>
-              {% if h.report_name %}
-                <a href="{{ url_for('download_dynamic_report', filename=h.report_name) }}">Télécharger</a>
+      <div class="shell">
+        <header class="topbar">
+          <div class="topbar-left">
+            <div class="logo-small">
+              {% if afma_logo_url %}
+                <img src="{{ afma_logo_url }}" alt="AFMA">
               {% else %}
-                -
+                <div class="logo-small-fallback">AF</div>
               {% endif %}
-            </td>
-            <td>{{ h.total_with_number }}</td>
-            <td>{{ h.total_ok }}</td>
-            <td>{{ h.total_error }}</td>
-            <td>{{ h.total_cost }}</td>
-          </tr>
+            </div>
+            <div>
+              <div class="title-main">Campagnes WhatsApp AFMA</div>
+              <div class="title-sub">Pilotage des envois et suivi des rapports</div>
+            </div>
+          </div>
+
+          <div>
+            <div class="user-chip">
+              <span class="icon">👤</span>
+              <span>{{ session.username }}</span>
+            </div>
+            <a class="logout-link" href="{{ url_for('logout') }}">Se déconnecter</a>
+          </div>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="messages">
+          {% for category, msg in messages %}
+            <li class="{{ category }}">{{ msg }}</li>
           {% endfor %}
-        </table>
-      {% else %}
-        <p>Aucune campagne enregistrée pour le moment.</p>
-      {% endif %}
+          </ul>
+        {% endif %}
+        {% endwith %}
+
+        <main class="grid">
+          <!-- Colonne gauche : nouvelle campagne -->
+          <section class="card">
+            <h2>Nouvelle campagne</h2>
+            <p class="desc">
+              Uploadez le fichier CSV fourni par AFMA pour lancer l’envoi de la campagne WhatsApp.
+            </p>
+
+            <form method="post" action="{{ url_for('run_campaign_route') }}" enctype="multipart/form-data">
+              <label class="upload-zone">
+                <div class="upload-icon">☁️</div>
+                <div class="upload-title">Cliquer pour sélectionner votre CSV</div>
+                <div class="upload-sub">Format attendu : fichier .csv séparé par « ; »</div>
+                <input type="file" name="csv_file" accept=".csv" required>
+              </label>
+
+              <button type="submit" class="btn-run">
+                <span class="icon">▶️</span>
+                <span>Lancer la campagne</span>
+              </button>
+            </form>
+          </section>
+
+          <!-- Colonne droite : historique -->
+          <section class="card">
+            <h2>Historique des campagnes</h2>
+            <p class="desc">Dernières campagnes et rapports d’envoi.</p>
+
+            {% if history %}
+              <div class="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date / Heure</th>
+                      <th>CSV</th>
+                      <th>Rapport</th>
+                      <th>Avec numéro</th>
+                      <th>OK</th>
+                      <th>Erreurs</th>
+                      <th>Coût total (USD)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for h in history %}
+                    <tr>
+                      <td>{{ h.timestamp }}</td>
+                      <td>{{ h.csv_name }}</td>
+                      <td class="report-link">
+                        {% if h.report_name %}
+                          <a href="{{ url_for('download_dynamic_report', filename=h.report_name) }}">Télécharger</a>
+                        {% else %}
+                          -
+                        {% endif %}
+                      </td>
+                      <td>{{ h.total_with_number }}</td>
+                      <td>
+                        <span class="badge-ok">{{ h.total_ok }}</span>
+                      </td>
+                      <td>
+                        {% if h.total_error > 0 %}
+                          <span class="badge-error">{{ h.total_error }}</span>
+                        {% else %}
+                          <span class="badge-ok">0</span>
+                        {% endif %}
+                      </td>
+                      <td>{{ "%.4f"|format(h.total_cost or 0) }}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <p class="empty-state">
+                Aucune campagne enregistrée pour le moment. Uploadez un premier CSV pour démarrer.
+              </p>
+            {% endif %}
+          </section>
+        </main>
+      </div>
     </body>
     </html>
     """
-    return render_template_string(html, history=history)
+    return render_template_string(html, history=history, afma_logo_url=AFMA_LOGO_URL)
 
 
 @app.route("/run-campaign", methods=["POST"])
@@ -561,6 +1037,7 @@ def infobip_webhook():
     if request.method == "GET":
         return "OK", 200
 
+    # Récupérer le JSON brut
     data = request.get_json(silent=True, force=True) or {}
 
     print("=== RAW WEBHOOK PAYLOAD ===")
@@ -570,9 +1047,52 @@ def infobip_webhook():
     if not results:
         return jsonify({"status": "no_results"}), 200
 
+    # Session Salesforce (initialisée au premier besoin)
     sf_session = None
 
     for msg in results:
+        # 💰 1) CAS "STATUT" AVEC PRIX (delivery report)
+        # Exemple de ce que tu as déjà reçu :
+        # {
+        #   "price": { "pricePerMessage": 0.006, "currency": "USD" },
+        #   "messageId": "...",
+        #   "to": "2126...",
+        #   "doneAt": "...",
+        #   "channel": "WHATSAPP",
+        #   ...
+        # }
+        if "price" in msg and "messageId" in msg and "to" in msg:
+            price_obj = msg.get("price") or {}
+            price_val = price_obj.get("pricePerMessage")
+            currency = price_obj.get("currency")
+            done_at = msg.get("doneAt")
+            message_id = msg.get("messageId")
+            to_number = msg.get("to")
+
+            try:
+                # 1) Log détaillé dans un CSV (optionnel mais utile)
+                with open("cost_log.csv", "a", encoding="utf-8", newline="") as f:
+                    writer = csv.writer(f)
+                    writer.writerow([done_at, to_number, message_id, price_val, currency])
+                print(f"[COST] Log coût: msg={message_id}, to={to_number}, price={price_val} {currency}")
+
+                # 2) Met à jour le dernier prix connu dans un fichier JSON
+                if price_val is not None:
+                    price_data = {
+                        "pricePerMessage": float(price_val),
+                        "currency": currency,
+                        "updatedAt": done_at,
+                    }
+                    with open("infobip_price.json", "w", encoding="utf-8") as pf:
+                        json.dump(price_data, pf, ensure_ascii=False)
+                    print(f"[COST] Prix actuel mis à jour: {price_data}")
+            except Exception as e:
+                print(f"[COST][ERROR] Impossible de logguer le prix: {e}")
+
+            # ⚠️ On ne traite pas ces évènements côté Salesforce
+            continue
+
+        # 💬 2) CAS "MESSAGE WHATSAPP" (avec integrationType + message) → ton flux normal
         if not msg.get("integrationType") or "message" not in msg:
             print("[SKIP] Évènement de statut (delivery/seen), ignoré pour Salesforce.")
             continue
@@ -582,6 +1102,7 @@ def infobip_webhook():
         contact = msg.get("contact", {}) or {}
         contact_name = contact.get("name")
 
+        # Données Excel / CSV pour ce numéro
         rows_for_phone = CLIENT_ROWS_BY_PHONE.get(phone, [])
         row_for_case = rows_for_phone[0] if rows_for_phone else {}
         excel_full_name = extract_name_from_row(row_for_case)
@@ -599,12 +1120,14 @@ def infobip_webhook():
         doc_url = None
         caption = None
 
+        # ---- TEXT ----
         if msg_type in ("TEXT", "text"):
             text = (
                 message_obj.get("text")
                 or message_obj.get("content", {}).get("text")
             )
 
+        # ---- DOCUMENT ou IMAGE ----
         if msg_type in ("DOCUMENT", "document", "IMAGE", "image"):
             doc_url = (
                 message_obj.get("url")
@@ -624,10 +1147,12 @@ def infobip_webhook():
                 print(f"Nom du fichier : {caption}")
         print(f"Timestamp : {received_at}")
 
+        # Fenêtre 2h
         active_window = has_active_window(phone, received_at)
         print(f"[WINDOW] Conversation active (<2h) pour {phone} ? {active_window}")
         print("------------------------")
 
+        #  Stockage mémoire
         store_in_memory(
             phone=phone,
             msg_type=msg_type,
@@ -636,11 +1161,13 @@ def infobip_webhook():
             timestamp=received_at,
         )
 
+        # Intégration Salesforce
         try:
             if sf_session is None:
                 sf_session = get_salesforce_session()
                 print("[SF] Session Salesforce initialisée")
 
+            # Récupérer ou créer le Case pour ce numéro
             case_id = get_case_for_phone(
                 session=sf_session,
                 phone=phone,
@@ -669,6 +1196,7 @@ def infobip_webhook():
                         f"ContentDocumentLink {link_id}"
                     )
 
+                    # 🔁 Réouvrir / remettre le Case en "Nouvelle demande"
                     try:
                         update_case_status(sf_session, case_id, "Nouvelle demande")
                         print(
@@ -680,6 +1208,7 @@ def infobip_webhook():
                             f"du Case {case_id}: {e}"
                         )
 
+                    # Accusé de réception après upload OK
                     send_ack_message(phone)
                 else:
                     print(
@@ -693,6 +1222,7 @@ def infobip_webhook():
             print(f"[SF][ERROR] Exception inattendue: {e}")
 
     return jsonify({"status": "ok"}), 200
+
 
 
 # ============================
