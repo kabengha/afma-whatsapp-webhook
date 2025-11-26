@@ -4,17 +4,44 @@ import csv
 from datetime import datetime, timedelta
 
 import requests
-from flask import Flask, request, jsonify
+from flask import (
+    Flask,
+    request,
+    jsonify,
+    send_file,
+    render_template_string,
+    redirect,
+    url_for,
+    session,
+    flash,
+)
+from functools import wraps
 
 from salesforce_client import (
     get_salesforce_session,
     create_case,
     upload_document_for_case,
-    update_case_status,      
+    update_case_status,
     SalesforceError,
 )
+from send_campaign import run_campaign  # 👈 nouvelle import
 
 app = Flask(__name__)
+
+# ============================
+#  Config login / interface
+# ============================
+app.secret_key = os.getenv("APP_SECRET_KEY", "change-me-please")
+
+ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "AFMA25@@")
+
+UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
+REPORT_DIR = os.getenv("REPORT_DIR", "reports")
+HISTORY_FILE = os.getenv("HISTORY_FILE", "campaign_history.jsonl")
+
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(REPORT_DIR, exist_ok=True)
 
 # ============================
 #  Config Infobip
@@ -29,6 +56,16 @@ INFOBIP_WHATSAPP_SENDER = os.getenv("INFOBIP_WHATSAPP_SENDER", "212700049292")
 
 # phone -> [rows...]
 CLIENT_ROWS_BY_PHONE: dict[str, list[dict]] = {}
+
+
+def login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if not session.get("logged_in"):
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+
+    return wrapper
 
 
 def load_client_db(csv_path: str | None = None):
@@ -49,7 +86,6 @@ def load_client_db(csv_path: str | None = None):
         with open(csv_path, newline="", encoding="utf-8-sig") as f:
             reader = csv.DictReader(f, delimiter=";")
             for row in reader:
-                # Adapter au nom de colonne réel dans ton CSV
                 phone = (
                     row.get("Num tele")
                     or row.get("Telephone")
@@ -65,8 +101,10 @@ def load_client_db(csv_path: str | None = None):
         total_rows = sum(len(v) for v in CLIENT_ROWS_BY_PHONE.values())
         print(f"[CLIENT_DB] Chargé {total_rows} lignes depuis {csv_path}")
     except FileNotFoundError:
-        print(f"[CLIENT_DB][WARN] Fichier {csv_path} introuvable. "
-              f"Pas de données campagne en mémoire.")
+        print(
+            f"[CLIENT_DB][WARN] Fichier {csv_path} introuvable. "
+            f"Pas de données campagne en mémoire."
+        )
     except Exception as e:
         print(f"[CLIENT_DB][ERROR] Erreur chargement {csv_path}: {e}")
 
@@ -101,7 +139,7 @@ def extract_company_from_row(row: dict) -> str | None:
         return None
 
     for col in [
-        "Nom.Client",          # 👈 ton vrai nom de colonne
+        "Nom.Client",  # 👈 ton vrai nom de colonne
         "Entreprise",
         "Nom entreprise",
         "Raison sociale",
@@ -118,16 +156,10 @@ def extract_company_from_row(row: dict) -> str | None:
 #  Stockage en mémoire
 # ============================
 
-# Historique des messages par numéro
-# { phone_number: [ { message_data }, ... ] }
-MESSAGE_STORE: dict = {}
+MESSAGE_STORE: dict = {}  # { phone_number: [ { message_data }, ... ] }
+CASE_STORE: dict = {}     # { phone_number: { "case_id": "...", "last_ts": "..." } }
 
-# Cache des Cases Salesforce créés par numéro
-# { phone_number: { "case_id": "...", "last_ts": "2025-11-16T10:26:07.000+0000" } }
-CASE_STORE: dict = {}
-
-# Fenêtre de 2h pour considérer une "conversation active"
-CASE_WINDOW = timedelta(hours=2)
+CASE_WINDOW = timedelta(hours=2)  # fenêtre active 2h
 
 
 # ============================
@@ -135,10 +167,7 @@ CASE_WINDOW = timedelta(hours=2)
 # ============================
 
 def parse_infobip_timestamp(ts: str) -> datetime | None:
-    """
-    Parse un timestamp Infobip du type :
-    '2025-11-16T10:26:07.000+0000'
-    """
+    """Parse un timestamp Infobip du type '2025-11-16T10:26:07.000+0000'."""
     if not ts:
         return None
     try:
@@ -161,7 +190,6 @@ def has_active_window(phone: str, current_ts_str: str) -> bool:
     if current_ts is None:
         return False
 
-    # On regarde le DERNIER message déjà enregistré pour ce numéro
     last_msg = messages[-1]
     last_ts_str = last_msg.get("timestamp")
     last_ts = parse_infobip_timestamp(last_ts_str)
@@ -174,7 +202,6 @@ def has_active_window(phone: str, current_ts_str: str) -> bool:
 
 def store_in_memory(phone, msg_type, text=None, doc_url=None, timestamp=None):
     """Stocke les messages reçus en mémoire (temporaire)."""
-
     entry = {
         "type": msg_type,
         "text": text,
@@ -195,26 +222,23 @@ def get_case_for_phone(session, phone: str, nom: str | None, entreprise: str | N
                        received_at: str) -> str:
     """
     Retourne l'ID du Case à utiliser pour ce numéro.
-
-    - Si fenêtre < 2h et un Case existe déjà en mémoire → réutiliser ce Case
-    - Sinon → créer un nouveau Case dans Salesforce, l'enregistrer dans CASE_STORE,
-      puis le retourner
+    - Si fenêtre < 2h et un Case existe déjà en mémoire → réutiliser
+    - Sinon → créer un nouveau Case dans Salesforce
     """
     active = has_active_window(phone, received_at)
     cached = CASE_STORE.get(phone)
 
-    # Si fenêtre active et on a déjà un Case pour ce numéro → on réutilise
     if active and cached and cached.get("case_id"):
         print(f"[CASE] Réutilisation du Case existant pour {phone}: {cached['case_id']}")
-        # On met à jour la dernière activité
         cached["last_ts"] = received_at
         return cached["case_id"]
 
-    # Sinon, on crée un nouveau Case dans Salesforce
-    print(f"[CASE] Création d'un nouveau Case pour {phone} (active_window={active}, cached={bool(cached)})")
+    print(
+        f"[CASE] Création d'un nouveau Case pour {phone} "
+        f"(active_window={active}, cached={bool(cached)})"
+    )
     case_id = create_case(session, phone=phone, nom=nom, entreprise=entreprise)
 
-    # On met à jour le cache
     CASE_STORE[phone] = {
         "case_id": case_id,
         "last_ts": received_at,
@@ -228,8 +252,6 @@ def normalize_infobip_media_url(raw_url: str) -> str:
     """
     Infobip envoie souvent des URLs https://api.infobip.com/...
     mais ton compte utilise un host dédié (INFOBIP_BASE_URL).
-
-    On garde le chemin /whatsapp/... et on remplace juste le domaine.
     """
     if not raw_url:
         return raw_url
@@ -262,13 +284,10 @@ def download_file(url: str, suggested_filename: str | None = None) -> tuple[byte
         resp = requests.get(final_url, headers=headers, timeout=20)
         resp.raise_for_status()
 
-        # --- Déduire l'extension depuis Content-Type ---
         content_type = resp.headers.get("Content-Type", "").lower()
         ext = ""
 
-        if "jpeg" in content_type:
-            ext = ".jpg"
-        elif "jpg" in content_type:
+        if "jpeg" in content_type or "jpg" in content_type:
             ext = ".jpg"
         elif "png" in content_type:
             ext = ".png"
@@ -277,13 +296,11 @@ def download_file(url: str, suggested_filename: str | None = None) -> tuple[byte
         elif "gif" in content_type:
             ext = ".gif"
 
-        # Nom du fichier : priorité au caption/nom donné
         if suggested_filename:
             filename = suggested_filename
         else:
             filename = final_url.split("/")[-1] or "whatsapp-file"
 
-        # Ajouter extension si manquante
         if ext and not filename.lower().endswith(ext):
             filename += ext
 
@@ -293,10 +310,9 @@ def download_file(url: str, suggested_filename: str | None = None) -> tuple[byte
         print(f"[DOWNLOAD] Erreur téléchargement fichier {final_url}: {e}")
         return None, ""
 
+
 def send_ack_message(phone: str):
-    """
-    Envoie un message WhatsApp simple d'accusé de réception.
-    """
+    """Envoie un message WhatsApp simple d'accusé de réception."""
     if not (INFOBIP_API_KEY and INFOBIP_BASE_URL and INFOBIP_WHATSAPP_SENDER):
         print("[ACK] Variables Infobip manquantes, ack non envoyé.")
         return
@@ -319,7 +335,7 @@ def send_ack_message(phone: str):
                 "Vous pouvez suivre le traitement de votre dossier via l’application mobile ou le portail Web.\n\n"
                 "Cordialement."
             )
-        }
+        },
     }
 
     try:
@@ -334,6 +350,209 @@ def send_ack_message(phone: str):
 
 
 # ============================
+#  Auth / Interface HTML
+# ============================
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username", "")
+        password = request.form.get("password", "")
+
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+            session["logged_in"] = True
+            session["username"] = username
+            return redirect(url_for("dashboard"))
+        else:
+            flash("Identifiants incorrects", "error")
+
+    html = """
+    <!doctype html>
+    <html>
+    <head><title>Login campagne WhatsApp</title></head>
+    <body>
+      <h1>Login</h1>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+        {% for category, msg in messages %}
+          <li style="color:red;">{{ msg }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+      {% endwith %}
+      <form method="post">
+        <label>Utilisateur:</label>
+        <input type="text" name="username"><br>
+        <label>Mot de passe:</label>
+        <input type="password" name="password"><br><br>
+        <button type="submit">Se connecter</button>
+      </form>
+    </body>
+    </html>
+    """
+    return render_template_string(html)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
+
+def append_history(entry: dict):
+    entry = dict(entry)
+    with open(HISTORY_FILE, "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+
+def load_history(limit: int = 20):
+    if not os.path.exists(HISTORY_FILE):
+        return []
+    lines = []
+    with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                lines.append(json.loads(line))
+            except Exception:
+                continue
+    lines.reverse()
+    return lines[:limit]
+
+
+@app.route("/")
+@login_required
+def dashboard():
+    history = load_history()
+
+    html = """
+    <!doctype html>
+    <html>
+    <head>
+      <title>Console campagne WhatsApp AFMA</title>
+    </head>
+    <body>
+      <h1>Campagnes WhatsApp AFMA</h1>
+      <p>Connecté en tant que {{ session.username }}</p>
+      <p><a href="{{ url_for('logout') }}">Se déconnecter</a></p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+        {% for category, msg in messages %}
+          <li style="color:{% if category == 'error' %}red{% else %}green{% endif %};">
+            {{ msg }}
+          </li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+      {% endwith %}
+
+      <h2>Lancer une nouvelle campagne</h2>
+      <form method="post" action="{{ url_for('run_campaign_route') }}" enctype="multipart/form-data">
+        <label>Fichier CSV de campagne :</label>
+        <input type="file" name="csv_file" accept=".csv" required>
+        <br><br>
+        <button type="submit">Lancer la campagne</button>
+      </form>
+
+      <hr>
+      <h2>Historique des campagnes</h2>
+      {% if history %}
+        <table border="1" cellpadding="5">
+          <tr>
+            <th>Date/heure</th>
+            <th>CSV</th>
+            <th>Rapport</th>
+            <th>Lignes avec numéro</th>
+            <th>OK</th>
+            <th>Erreurs</th>
+            <th>Coût total</th>
+          </tr>
+          {% for h in history %}
+          <tr>
+            <td>{{ h.timestamp }}</td>
+            <td>{{ h.csv_name }}</td>
+            <td>
+              {% if h.report_name %}
+                <a href="{{ url_for('download_dynamic_report', filename=h.report_name) }}">Télécharger</a>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>{{ h.total_with_number }}</td>
+            <td>{{ h.total_ok }}</td>
+            <td>{{ h.total_error }}</td>
+            <td>{{ h.total_cost }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p>Aucune campagne enregistrée pour le moment.</p>
+      {% endif %}
+    </body>
+    </html>
+    """
+    return render_template_string(html, history=history)
+
+
+@app.route("/run-campaign", methods=["POST"])
+@login_required
+def run_campaign_route():
+    file = request.files.get("csv_file")
+    if not file:
+        flash("Aucun fichier CSV reçu.", "error")
+        return redirect(url_for("dashboard"))
+
+    if not file.filename.lower().endswith(".csv"):
+        flash("Veuillez uploader un fichier .csv", "error")
+        return redirect(url_for("dashboard"))
+
+    timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+    safe_name = file.filename.replace(" ", "_")
+    csv_name = f"{timestamp_str}_{safe_name}"
+    csv_path = os.path.join(UPLOAD_DIR, csv_name)
+
+    file.save(csv_path)
+
+    # 🔄 Met à jour la base en mémoire pour le webhook
+    load_client_db(csv_path)
+
+    report_name = f"rapport_{timestamp_str}.csv"
+    report_path = os.path.join(REPORT_DIR, report_name)
+
+    try:
+        summary = run_campaign(csv_path, report_path)
+
+        summary["csv_name"] = csv_name
+        summary["report_name"] = report_name
+        append_history(summary)
+
+        flash(
+            f"Campagne lancée. OK: {summary['total_ok']}, erreurs: {summary['total_error']}, coût total: {summary['total_cost']}",
+            "success",
+        )
+    except Exception as e:
+        flash(f"Erreur lors de la campagne : {e}", "error")
+        return redirect(url_for("dashboard"))
+
+    return redirect(url_for("dashboard"))
+
+
+@app.route("/download-report/<path:filename>")
+@login_required
+def download_dynamic_report(filename):
+    filename = os.path.basename(filename)
+    file_path = os.path.join(REPORT_DIR, filename)
+    if not os.path.exists(file_path):
+        return "Fichier non trouvé", 404
+    return send_file(file_path, as_attachment=True)
+
+
+# ============================
 #  Webhook Infobip
 # ============================
 
@@ -342,7 +561,6 @@ def infobip_webhook():
     if request.method == "GET":
         return "OK", 200
 
-    # Récupérer le JSON brut
     data = request.get_json(silent=True, force=True) or {}
 
     print("=== RAW WEBHOOK PAYLOAD ===")
@@ -352,43 +570,41 @@ def infobip_webhook():
     if not results:
         return jsonify({"status": "no_results"}), 200
 
-    # Session Salesforce (initialisée au premier besoin)
     sf_session = None
 
-    # Traiter chaque message
     for msg in results:
         if not msg.get("integrationType") or "message" not in msg:
             print("[SKIP] Évènement de statut (delivery/seen), ignoré pour Salesforce.")
             continue
+
         phone = msg.get("from") or msg.get("sender")
         received_at = msg.get("receivedAt")
         contact = msg.get("contact", {}) or {}
         contact_name = contact.get("name")
 
-        # Données Excel / CSV pour ce numéro
         rows_for_phone = CLIENT_ROWS_BY_PHONE.get(phone, [])
         row_for_case = rows_for_phone[0] if rows_for_phone else {}
         excel_full_name = extract_name_from_row(row_for_case)
         excel_company = extract_company_from_row(row_for_case)
 
-        print(f"[CLIENT_DB] Phone={phone} -> nom_excel={excel_full_name}, "
-              f"entreprise_excel={excel_company}, nom_whatsapp={contact_name}")
+        print(
+            f"[CLIENT_DB] Phone={phone} -> nom_excel={excel_full_name}, "
+            f"entreprise_excel={excel_company}, nom_whatsapp={contact_name}"
+        )
 
         message_obj = msg.get("message", {}) or {}
         msg_type = message_obj.get("type")
 
         text = None
         doc_url = None
-        caption = None  # caption / nom du fichier
+        caption = None
 
-        # ---- TEXT ----
         if msg_type in ("TEXT", "text"):
             text = (
                 message_obj.get("text")
                 or message_obj.get("content", {}).get("text")
             )
 
-        # ---- DOCUMENT ou IMAGE ----
         if msg_type in ("DOCUMENT", "document", "IMAGE", "image"):
             doc_url = (
                 message_obj.get("url")
@@ -408,12 +624,10 @@ def infobip_webhook():
                 print(f"Nom du fichier : {caption}")
         print(f"Timestamp : {received_at}")
 
-        # Fenêtre 2h
         active_window = has_active_window(phone, received_at)
         print(f"[WINDOW] Conversation active (<2h) pour {phone} ? {active_window}")
         print("------------------------")
 
-        #  Stockage mémoire
         store_in_memory(
             phone=phone,
             msg_type=msg_type,
@@ -422,13 +636,11 @@ def infobip_webhook():
             timestamp=received_at,
         )
 
-        # Intégration Salesforce
         try:
             if sf_session is None:
                 sf_session = get_salesforce_session()
                 print("[SF] Session Salesforce initialisée")
 
-            # Récupérer ou créer le Case pour ce numéro
             case_id = get_case_for_phone(
                 session=sf_session,
                 phone=phone,
@@ -437,11 +649,14 @@ def infobip_webhook():
                 received_at=received_at,
             )
 
-           # Si on a un document ou une image → upload vers Salesforce
+            # Si on a un document ou une image → upload vers Salesforce
             if doc_url:
                 file_bytes, filename = download_file(doc_url, suggested_filename=caption)
                 if file_bytes:
-                    print(f"[SF] Upload du document pour le Case {case_id}, filename={filename}")
+                    print(
+                        f"[SF] Upload du document pour le Case {case_id}, "
+                        f"filename={filename}"
+                    )
                     link_id = upload_document_for_case(
                         session=sf_session,
                         case_id=case_id,
@@ -449,20 +664,28 @@ def infobip_webhook():
                         filename=filename,
                         title=f"Whatsapp - {phone}",
                     )
-                    print(f"[SF] Document lié au Case {case_id} via ContentDocumentLink {link_id}")
+                    print(
+                        f"[SF] Document lié au Case {case_id} via "
+                        f"ContentDocumentLink {link_id}"
+                    )
 
-                    # 🔁 Réouvrir / remettre le Case en "Nouvelle demande"
                     try:
                         update_case_status(sf_session, case_id, "Nouvelle demande")
-                        print(f"[SF] Statut du Case {case_id} remis à 'Nouvelle demande'")
+                        print(
+                            f"[SF] Statut du Case {case_id} remis à 'Nouvelle demande'"
+                        )
                     except SalesforceError as e:
-                        print(f"[SF][ERROR] Impossible de mettre à jour le statut du Case {case_id}: {e}")
+                        print(
+                            f"[SF][ERROR] Impossible de mettre à jour le statut "
+                            f"du Case {case_id}: {e}"
+                        )
 
-                    # Accusé de réception après upload OK
                     send_ack_message(phone)
                 else:
-                    print(f"[SF] Aucun fichier téléchargé pour {doc_url}, upload ignoré.")
-                 
+                    print(
+                        f"[SF] Aucun fichier téléchargé pour {doc_url}, "
+                        f"upload ignoré."
+                    )
 
         except SalesforceError as e:
             print(f"[SF][ERROR] Erreur Salesforce: {e}")
@@ -472,11 +695,12 @@ def infobip_webhook():
     return jsonify({"status": "ok"}), 200
 
 
-# Charger la base campagne au démarrage du module
+# ============================
+#  Démarrage / init
+# ============================
+
 load_client_db()
 
 if __name__ == "__main__":
-    # Dev local
-    # (re-charge au cas où tu veux tester avec un autre fichier)
     load_client_db()
     app.run(host="0.0.0.0", port=5000, debug=True)
