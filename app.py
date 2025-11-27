@@ -767,12 +767,7 @@ def dashboard():
           border-color: #0076bf;
           background: #f2f7ff;
         }
-        .upload-zone input[type="file"] {
-          position: absolute;
-          inset: 0;
-          opacity: 0;
-          cursor: pointer;
-        }
+        
         .upload-icon {
           font-size: 30px;
           margin-bottom: 8px;

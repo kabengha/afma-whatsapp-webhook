@@ -6,8 +6,12 @@ import json
 import requests
 from datetime import datetime
 
+
 INFOBIP_API_KEY = os.getenv("INFOBIP_API_KEY")
 INFOBIP_BASE_URL = os.getenv("INFOBIP_BASE_URL", "https://m3n6y4.api.infobip.com")
+
+DEFAULT_PRICE_PER_MESSAGE = float(os.getenv("DEFAULT_PRICE_PER_MESSAGE", "0.0"))
+
 
 # ⚠️ À vérifier sur Infobip :
 WHATSAPP_SENDER = os.getenv("INFOBIP_WHATSAPP_SENDER", "212700049292")
@@ -148,14 +152,19 @@ def send_template_message(
 
     # 💰 Si l'API ne renvoie pas de prix, on utilise le dernier prix réel
     # reçu via le webhook (infobip_price.json)
+  
     if cout == 0.0:
         auto_price = get_current_price_from_webhook_file()
         print(f"[PRICE] cout initial=0.0, auto_price lu={auto_price}")
         if auto_price > 0:
             cout = auto_price
             print(f"[PRICE] Prix automatique utilisé depuis webhook: {cout}")
+        elif DEFAULT_PRICE_PER_MESSAGE > 0:
+            cout = DEFAULT_PRICE_PER_MESSAGE
+            print(f"[PRICE] Fallback sur DEFAULT_PRICE_PER_MESSAGE={cout}")
         else:
-            print("[PRICE] Aucun prix trouvé dans le webhook, coût reste à 0.0")
+            print("[PRICE] Aucun prix trouvé (webhook + fallback), coût reste à 0.0")
+
 
     if api_status == "OK":
         print(f"[OK] Message envoyé. messageId={message_id} coût={cout}")
