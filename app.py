@@ -2,6 +2,8 @@ import os
 import json
 import csv
 from datetime import datetime, timedelta
+import threading
+
 
 import requests
 from flask import (
@@ -985,6 +987,24 @@ def dashboard():
     """
     return render_template_string(html, history=history, afma_logo_url=AFMA_LOGO_URL)
 
+def run_campaign_background(csv_path, report_path, csv_name, report_name):
+    """
+    Lance la campagne en arrière-plan pour éviter les timeouts HTTP.
+    Le résultat est enregistré dans l'historique dès que c'est terminé.
+    """
+    try:
+        print(f"[BG] Démarrage campagne en arrière-plan : {csv_path}")
+        summary = run_campaign(csv_path, report_path)
+
+        summary["csv_name"] = csv_name
+        summary["report_name"] = report_name
+        append_history(summary)
+
+        print(f"[BG] Campagne terminée. OK={summary['total_ok']}, "
+              f"Erreur={summary['total_error']}, Coût={summary['total_cost']}")
+    except Exception as e:
+        print(f"[BG][ERROR] Erreur lors de la campagne : {e}")
+
 
 @app.route("/run-campaign", methods=["POST"])
 @login_required
@@ -1011,21 +1031,20 @@ def run_campaign_route():
     report_name = f"rapport_{timestamp_str}.csv"
     report_path = os.path.join(REPORT_DIR, report_name)
 
-    try:
-        summary = run_campaign(csv_path, report_path)
+    # 👉 Lancer en **arrière-plan**
+    t = threading.Thread(
+        target=run_campaign_background,
+        args=(csv_path, report_path, csv_name, report_name),
+        daemon=True,
+    )
+    t.start()
 
-        summary["csv_name"] = csv_name
-        summary["report_name"] = report_name
-        append_history(summary)
-
-        flash(
-            f"Campagne lancée. OK: {summary['total_ok']}, erreurs: {summary['total_error']}, coût total: {summary['total_cost']}",
-            "success",
-        )
-    except Exception as e:
-        flash(f"Erreur lors de la campagne : {e}", "error")
-        return redirect(url_for("dashboard"))
-
+    # On répond tout de suite
+    flash(
+        "Campagne lancée en arrière-plan. "
+        "Rafraîchissez la page dans quelques instants pour voir le rapport.",
+        "success",
+    )
     return redirect(url_for("dashboard"))
 
 
@@ -1074,21 +1093,37 @@ def infobip_webhook():
         # }
         if "price" in msg and "messageId" in msg and "to" in msg:
             price_obj = msg.get("price") or {}
-            price_val = price_obj.get("pricePerMessage")
+            price_raw = price_obj.get("pricePerMessage")
             currency = price_obj.get("currency")
             done_at = msg.get("doneAt")
             message_id = msg.get("messageId")
             to_number = msg.get("to")
 
+            # 🔎 On essaie de convertir en float proprement
+            price_val = None
+          # 🔍 Log brut des events avec "price" pour diagnostic
+            try:
+                with open("cost_raw.log", "a", encoding="utf-8") as rf:
+                    rf.write("=== EVENT PRIX ===\n")
+                    rf.write(json.dumps(msg, ensure_ascii=False) + "\n\n")
+            except Exception as e:
+                print(f"[COST][WARN] Impossible d'écrire dans cost_raw.log: {e}")
+
+            try:
+                if price_raw is not None:
+                    price_val = float(price_raw)
+            except Exception:
+                price_val = None
+
             try:
                 # 1) Log détaillé dans un CSV (optionnel mais utile)
                 with open("cost_log.csv", "a", encoding="utf-8", newline="") as f:
                     writer = csv.writer(f)
-                    writer.writerow([done_at, to_number, message_id, price_val, currency])
-                print(f"[COST] Log coût: msg={message_id}, to={to_number}, price={price_val} {currency}")
+                    writer.writerow([done_at, to_number, message_id, price_raw, currency])
+                print(f"[COST] Log coût: msg={message_id}, to={to_number}, price={price_raw} {currency}")
 
-                # 2) Met à jour le dernier prix connu dans un fichier JSON
-                if price_val is not None:
+                # 2) On ne met à jour le fichier prix QUE si price_val > 0
+                if price_val is not None and price_val > 0:
                     price_data = {
                         "pricePerMessage": float(price_val),
                         "currency": currency,
@@ -1098,6 +1133,9 @@ def infobip_webhook():
                         json.dump(price_data, pf, ensure_ascii=False)
                     print(f"[COST] Fichier prix écrit dans {PRICE_CACHE_FILE}")
                     print(f"[COST] Prix actuel mis à jour: {price_data}")
+                else:
+                    print(f"[COST] Prix absent ou nul ({price_raw}), fichier prix NON mis à jour.")
+
             except Exception as e:
                 print(f"[COST][ERROR] Impossible de logguer le prix: {e}")
 
