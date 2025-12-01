@@ -1074,19 +1074,20 @@ def infobip_webhook():
 
     # Session Salesforce (initialisée au premier besoin)
     sf_session = None
-
+    
     for msg in results:
-        # 💰 1) CAS "STATUT" AVEC PRIX (delivery report)
-        # Exemple de ce que tu as déjà reçu :
-        # {
-        #   "price": { "pricePerMessage": 0.006, "currency": "USD" },
-        #   "messageId": "...",
-        #   "to": "2126...",
-        #   "doneAt": "...",
-        #   "channel": "WHATSAPP",
-        #   ...
-        # }
-        if "price" in msg and "messageId" in msg and "to" in msg:
+        # 💰 1) CAS "STATUT" AVEC PRIX (delivery report → pour tes campagnes sortantes)
+        # On les reconnaît parce qu'ils ont un status + doneAt (ce que n'ont PAS les messages entrants)
+        is_delivery_report = (
+            "price" in msg
+            and "status" in msg
+            and "doneAt" in msg
+            and msg.get("channel") == "WHATSAPP"
+            and "messageId" in msg
+            and "to" in msg
+        )
+
+        if is_delivery_report:
             price_obj = msg.get("price") or {}
             price_raw = price_obj.get("pricePerMessage")
             currency = price_obj.get("currency")
@@ -1094,16 +1095,16 @@ def infobip_webhook():
             message_id = msg.get("messageId")
             to_number = msg.get("to")
 
-            # 🔎 On essaie de convertir en float proprement
-            price_val = None
-          # 🔍 Log brut des events avec "price" pour diagnostic
+            # 🔍 Log brut des events avec "price" pour diagnostic
             try:
                 with open("cost_raw.log", "a", encoding="utf-8") as rf:
-                    rf.write("=== EVENT PRIX ===\n")
+                    rf.write("=== EVENT PRIX (DELIVERY REPORT) ===\n")
                     rf.write(json.dumps(msg, ensure_ascii=False) + "\n\n")
             except Exception as e:
                 print(f"[COST][WARN] Impossible d'écrire dans cost_raw.log: {e}")
 
+            # On essaie de convertir le prix proprement
+            price_val = None
             try:
                 if price_raw is not None:
                     price_val = float(price_raw)
@@ -1111,13 +1112,13 @@ def infobip_webhook():
                 price_val = None
 
             try:
-                # 1) Log détaillé dans un CSV (optionnel mais utile)
+                # 1) Log détaillé dans un CSV
                 with open("cost_log.csv", "a", encoding="utf-8", newline="") as f:
                     writer = csv.writer(f)
                     writer.writerow([done_at, to_number, message_id, price_raw, currency])
                 print(f"[COST] Log coût: msg={message_id}, to={to_number}, price={price_raw} {currency}")
 
-                # 2) On ne met à jour le fichier prix QUE si price_val > 0
+                # 2) Mise à jour du cache prix UNIQUEMENT si > 0
                 if price_val is not None and price_val > 0:
                     price_data = {
                         "pricePerMessage": float(price_val),
@@ -1134,13 +1135,14 @@ def infobip_webhook():
             except Exception as e:
                 print(f"[COST][ERROR] Impossible de logguer le prix: {e}")
 
-            # ⚠️ On ne traite pas ces évènements côté Salesforce
+            # ⚠️ On ne traite PAS ces events côté Salesforce
             continue
 
-        # 💬 2) CAS "MESSAGE WHATSAPP" (avec integrationType + message) → ton flux normal
+        # 💬 2) Si ce n’est pas un delivery report → on passe à la logique "message WhatsApp"
         if not msg.get("integrationType") or "message" not in msg:
-            print("[SKIP] Évènement de statut (delivery/seen), ignoré pour Salesforce.")
+            print("[SKIP] Évènement sans integrationType/message (probablement statut simple), ignoré pour Salesforce.")
             continue
+
 
         phone = msg.get("from") or msg.get("sender")
         received_at = msg.get("receivedAt")
