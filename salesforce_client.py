@@ -66,6 +66,23 @@ def _headers(session: dict) -> dict:
     }
 
 
+def get_case_status(session: dict, case_id: str) -> str:
+    """
+    Retourne le champ Status d'un Case Salesforce.
+    """
+    url = f"{session['instance_url']}/services/data/v59.0/sobjects/Case/{case_id}?fields=Status"
+    headers = _headers(session)
+
+    resp = requests.get(url, headers=headers, timeout=10)
+    try:
+        resp.raise_for_status()
+    except requests.HTTPError as e:
+        raise SalesforceError(f"Erreur get_case_status: {e} - {resp.text}")
+
+    data = resp.json()
+    return data.get("Status", "") or ""
+
+
 def create_case(session: dict, phone: str, nom: str | None = None,
                 entreprise: str | None = None,
                 cin: str | None = None,
@@ -90,7 +107,6 @@ def create_case(session: dict, phone: str, nom: str | None = None,
         "CIN__c": cin or "",
         "NDePolice__c": police or "",
     }
-
 
     resp = requests.post(url, headers=headers, json=payload, timeout=10)
     try:
