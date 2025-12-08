@@ -25,6 +25,7 @@ from salesforce_client import (
     upload_document_for_case,
     update_case_status,
     SalesforceError,
+    get_case_status,
 )
 from send_campaign import run_campaign, PRICE_CACHE_FILE   # 👈 nouvelle import
 
@@ -157,6 +158,45 @@ def extract_company_from_row(row: dict) -> str | None:
     return None
 
 
+
+def extract_cin_from_row(row: dict) -> str | None:
+    """
+    Récupère la CIN depuis le CSV.
+    Adapte la liste ci-dessous aux noms exacts de colonnes de ton fichier.
+    """
+    if not row:
+        return None
+
+    for col in ["CIN", "Cin", "N.CIN", "N° CIN", "C.I.N"]:
+        val = row.get(col)
+        if val:
+            return str(val).strip()
+
+    return None
+
+
+def extract_police_from_row(row: dict) -> str | None:
+    """
+    Récupère le numéro de police depuis le CSV.
+    Adapte la liste aux noms exacts de colonnes.
+    """
+    if not row:
+        return None
+
+    for col in [
+        "N° Police",
+        "Num police",
+        "NumPolice",
+        "NumeroPolice",
+        "NDePolice",
+        "Police",
+    ]:
+        val = row.get(col)
+        if val:
+            return str(val).strip()
+
+    return None
+
 # ============================
 #  Stockage en mémoire
 # ============================
@@ -223,26 +263,53 @@ def store_in_memory(phone, msg_type, text=None, doc_url=None, timestamp=None):
     print(f"[STORE] Total messages pour {phone}: {len(MESSAGE_STORE[phone])}")
 
 
-def get_case_for_phone(session, phone: str, nom: str | None, entreprise: str | None,
-                       received_at: str) -> str:
-    """
-    Retourne l'ID du Case à utiliser pour ce numéro.
-    - Si fenêtre < 2h et un Case existe déjà en mémoire → réutiliser
-    - Sinon → créer un nouveau Case dans Salesforce
-    """
+def get_case_for_phone(
+    session,
+    phone: str,
+    nom: str | None,
+    entreprise: str | None,
+    received_at: str,
+    cin: str | None = None,
+    police: str | None = None,
+) -> str:
     active = has_active_window(phone, received_at)
     cached = CASE_STORE.get(phone)
 
-    if active and cached and cached.get("case_id"):
-        print(f"[CASE] Réutilisation du Case existant pour {phone}: {cached['case_id']}")
-        cached["last_ts"] = received_at
-        return cached["case_id"]
+    is_closed = False
+    last_case_id = cached.get("case_id") if cached else None
 
+    if last_case_id:
+        try:
+            status = get_case_status(session, last_case_id)
+            print(f"[CASE] Statut actuel du Case {last_case_id}: {status}")
+            # Adapte selon tes valeurs exactes Salesforce
+            if status.lower().startswith("clo"):  # "Closed", "Clôturé", etc.
+                is_closed = True
+        except SalesforceError as e:
+            print(f"[CASE][WARN] Impossible de récupérer le statut du Case {last_case_id}: {e}")
+
+    # ✅ On ne réutilise que si :
+    # - fenêtre < 2h
+    # - un Case est en cache
+    # - et il n'est pas clôturé
+    if active and cached and last_case_id and not is_closed:
+        print(f"[CASE] Réutilisation du Case existant pour {phone}: {last_case_id}")
+        cached["last_ts"] = received_at
+        return last_case_id
+
+    # Sinon → nouveau Case
     print(
         f"[CASE] Création d'un nouveau Case pour {phone} "
-        f"(active_window={active}, cached={bool(cached)})"
+        f"(active_window={active}, cached={bool(cached)}, closed={is_closed})"
     )
-    case_id = create_case(session, phone=phone, nom=nom, entreprise=entreprise)
+    case_id = create_case(
+        session,
+        phone=phone,
+        nom=nom,
+        entreprise=entreprise,
+        cin=cin,
+        police=police,
+    )
 
     CASE_STORE[phone] = {
         "case_id": case_id,
@@ -251,6 +318,7 @@ def get_case_for_phone(session, phone: str, nom: str | None, entreprise: str | N
 
     print(f"[CASE] Nouveau Case créé pour {phone}: {case_id}")
     return case_id
+
 
 
 def normalize_infobip_media_url(raw_url: str) -> str:
@@ -930,43 +998,65 @@ def dashboard():
               <div class="table-wrapper">
                 <table>
                   <thead>
-                    <tr>
-                      <th>Date / Heure</th>
-                      <th>CSV</th>
-                      <th>Rapport</th>
-                      <th>Avec numéro</th>
-                      <th>OK</th>
-                      <th>Erreurs</th>
-                      <th>Coût total (USD)</th>
-                    </tr>
-                  </thead>
+                  <tr>
+                    <th>Date / Heure</th>
+                    <th>CSV</th>
+                    <th>Rapport</th>
+                    <th>Avec numéro</th>
+                    <th>OK</th>
+                    <th>Erreurs</th>
+                    <th>Coût total (USD)</th>
+                    <th>Statut</th>
+                    <th>Détail</th>
+                  </tr>
+                </thead>
                   <tbody>
-                    {% for h in history %}
-                    <tr>
-                      <td>{{ h.timestamp }}</td>
-                      <td>{{ h.csv_name }}</td>
-                      <td class="report-link">
-                        {% if h.report_name %}
-                          <a href="{{ url_for('download_dynamic_report', filename=h.report_name) }}">Télécharger</a>
-                        {% else %}
-                          -
-                        {% endif %}
-                      </td>
-                      <td>{{ h.total_with_number }}</td>
-                      <td>
-                        <span class="badge-ok">{{ h.total_ok }}</span>
-                      </td>
-                      <td>
-                        {% if h.total_error > 0 %}
-                          <span class="badge-error">{{ h.total_error }}</span>
-                        {% else %}
-                          <span class="badge-ok">0</span>
-                        {% endif %}
-                      </td>
-                      <td>{{ "%.4f"|format(h.total_cost or 0) }}</td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
+                  {% for h in history %}
+                  <tr>
+                    <td>{{ h.timestamp }}</td>
+                    <td>{{ h.csv_name }}</td>
+                    <td class="report-link">
+                      {% if h.report_name %}
+                        <a href="{{ url_for('download_dynamic_report', filename=h.report_name) }}">Télécharger</a>
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+                    <td>{{ h.total_with_number }}</td>
+                    <td>
+                      <span class="badge-ok">{{ h.total_ok }}</span>
+                    </td>
+                    <td>
+                      {% if h.total_error > 0 %}
+                        <span class="badge-error">{{ h.total_error }}</span>
+                      {% else %}
+                        <span class="badge-ok">0</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ "%.4f"|format(h.total_cost or 0) }}</td>
+
+                    {# 🆕 Statut #}
+                    {% set status = h.status or 'success' %}
+                    <td>
+                      {% if status == 'error' %}
+                        <span class="badge-error">Erreur fichier</span>
+                      {% else %}
+                        <span class="badge-ok">Succès</span>
+                      {% endif %}
+                    </td>
+
+                    {# 🆕 Détail #}
+                    <td>
+                      {% if h.error_message %}
+                        {{ h.error_message }}
+                      {% else %}
+                        -
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+
                 </table>
               </div>
             {% else %}
@@ -993,12 +1083,27 @@ def run_campaign_background(csv_path, report_path, csv_name, report_name):
 
         summary["csv_name"] = csv_name
         summary["report_name"] = report_name
+        summary.setdefault("status", "success")
         append_history(summary)
 
         print(f"[BG] Campagne terminée. OK={summary['total_ok']}, "
               f"Erreur={summary['total_error']}, Coût={summary['total_cost']}")
     except Exception as e:
         print(f"[BG][ERROR] Erreur lors de la campagne : {e}")
+
+        error_entry = {
+            "csv_name": csv_name,
+            "report_name": None,
+            "total_with_number": 0,
+            "total_ok": 0,
+            "total_error": 0,
+            "total_cost": 0.0,
+            "timestamp": datetime.now().isoformat(),
+            "status": "error",
+            "error_message": str(e),
+        }
+        append_history(error_entry)
+
 
 
 @app.route("/run-campaign", methods=["POST"])
@@ -1154,10 +1259,13 @@ def infobip_webhook():
         row_for_case = rows_for_phone[0] if rows_for_phone else {}
         excel_full_name = extract_name_from_row(row_for_case)
         excel_company = extract_company_from_row(row_for_case)
-
+        excel_cin = extract_cin_from_row(row_for_case)
+        excel_police = extract_police_from_row(row_for_case)
+        
         print(
             f"[CLIENT_DB] Phone={phone} -> nom_excel={excel_full_name}, "
-            f"entreprise_excel={excel_company}, nom_whatsapp={contact_name}"
+            f"entreprise_excel={excel_company}, nom_whatsapp={contact_name}, "
+            f"cin={excel_cin}, police={excel_police}"
         )
 
         message_obj = msg.get("message", {}) or {}
@@ -1221,6 +1329,8 @@ def infobip_webhook():
                 nom=excel_full_name or contact_name,
                 entreprise=excel_company,
                 received_at=received_at,
+                cin=excel_cin,
+                police=excel_police,
             )
 
             # Si on a un document ou une image → upload vers Salesforce

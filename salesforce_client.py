@@ -67,7 +67,9 @@ def _headers(session: dict) -> dict:
 
 
 def create_case(session: dict, phone: str, nom: str | None = None,
-                entreprise: str | None = None) -> str:
+                entreprise: str | None = None,
+                cin: str | None = None,
+                police: str | None = None) -> str:
     """
     Crée un Case dans Salesforce.
     Retourne le CaseId.
@@ -76,9 +78,7 @@ def create_case(session: dict, phone: str, nom: str | None = None,
     headers = _headers(session)
 
     payload = {
-        # Nom de l'adhérent (full.name.adherent)
         "Nom__c": nom or "",
-        # Nom de l'entreprise (Nom.Client)
         "NomDeLentreprise__c": entreprise or "",
         "Origin": "Whatsapp",
         "TypeDeDeclaration__c": "Complément d'information",
@@ -86,7 +86,11 @@ def create_case(session: dict, phone: str, nom: str | None = None,
         "Status": "Nouvelle demande",
         "RecordTypeId": SF_CASE_RECORD_TYPE_ID,
         "Telephone__c": phone,
+        # 🆕 nouveaux champs :
+        "CIN__c": cin or "",
+        "NDePolice__c": police or "",
     }
+
 
     resp = requests.post(url, headers=headers, json=payload, timeout=10)
     try:
