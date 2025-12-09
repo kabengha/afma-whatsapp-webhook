@@ -271,19 +271,31 @@ def get_case_for_phone(
     received_at: str,
     cin: str | None = None,
     police: str | None = None,
+    active_window: bool | None = None,  # 🆕
 ) -> str:
-    active = has_active_window(phone, received_at)
+    """
+    Retourne l'ID du Case à utiliser pour ce numéro.
+    - Si fenêtre < 2h ET Case non clôturé -> réutiliser
+    - Sinon -> créer un nouveau Case
+    """
+
+    # 🧠 Si on ne nous donne pas active_window, on le calcule (fallback)
+    if active_window is None:
+        active = has_active_window(phone, received_at)
+    else:
+        active = active_window
+
     cached = CASE_STORE.get(phone)
 
     is_closed = False
     last_case_id = cached.get("case_id") if cached else None
 
+    # Vérifier le statut du dernier Case (s'il existe)
     if last_case_id:
         try:
             status = get_case_status(session, last_case_id)
             print(f"[CASE] Statut actuel du Case {last_case_id}: {status}")
-            # Adapte selon tes valeurs exactes Salesforce
-            if status.lower().startswith("clo"):  # "Closed", "Clôturé", etc.
+            if status.lower().startswith("clo"):  # "Closed", "Clôturé", ...
                 is_closed = True
         except SalesforceError as e:
             print(f"[CASE][WARN] Impossible de récupérer le statut du Case {last_case_id}: {e}")
@@ -297,7 +309,7 @@ def get_case_for_phone(
         cached["last_ts"] = received_at
         return last_case_id
 
-    # Sinon → nouveau Case
+    # ❌ Sinon → nouveau Case
     print(
         f"[CASE] Création d'un nouveau Case pour {phone} "
         f"(active_window={active}, cached={bool(cached)}, closed={is_closed})"
@@ -1324,14 +1336,15 @@ def infobip_webhook():
 
             # Récupérer ou créer le Case pour ce numéro
             case_id = get_case_for_phone(
-                session=sf_session,
-                phone=phone,
-                nom=excel_full_name or contact_name,
-                entreprise=excel_company,
-                received_at=received_at,
-                cin=excel_cin,
-                police=excel_police,
-            )
+            session=sf_session,
+            phone=phone,
+            nom=excel_full_name or contact_name,
+            entreprise=excel_company,
+            received_at=received_at,
+            cin=excel_cin,
+            police=excel_police,
+            active_window=active_window,  # 🆕 on réutilise la valeur calculée AVANT le store
+        )
 
             # Si on a un document ou une image → upload vers Salesforce
             if doc_url:
