@@ -26,6 +26,8 @@ from salesforce_client import (
     update_case_status,
     SalesforceError,
     get_case_status,
+    create_whatsapp_notification_auto,
+    upload_document_for_entity,
 )
 from send_campaign import run_campaign, PRICE_CACHE_FILE   # 👈 nouvelle import
 
@@ -1097,6 +1099,44 @@ def run_campaign_background(csv_path, report_path, csv_name, report_name):
         summary["report_name"] = report_name
         summary.setdefault("status", "success")
         append_history(summary)
+
+        # =========================
+        #  🆕 Salesforce: WhatsAppNotifications__c + upload rapport CSV
+        # =========================
+        try:
+            sf_session = get_salesforce_session()
+            date_denvoi = datetime.now().strftime("%d/%m/%Y")
+
+            notif_id = create_whatsapp_notification_auto(
+                session=sf_session,
+                messages_a_envoyer=summary.get("total_with_number", 0),
+                messages_envoyes=summary.get("total_ok", 0),
+                messages_echoues=summary.get("total_error", 0),
+                date_denvoi_jjmmYYYY=date_denvoi,
+                cout_envoi=summary.get("total_cost", 0.0),
+            )
+            print(f"[SF] WhatsAppNotifications__c créé: {notif_id}")
+
+            # Attacher le rapport CSV généré à l'enregistrement WhatsAppNotifications__c
+            if os.path.exists(report_path):
+                with open(report_path, "rb") as f:
+                    file_bytes = f.read()
+
+                link_id = upload_document_for_entity(
+                    session=sf_session,
+                    entity_id=notif_id,
+                    file_bytes=file_bytes,
+                    filename=report_name,
+                    title=f"Rapport campagne - {date_denvoi}",
+                )
+                print(f"[SF] Rapport lié via ContentDocumentLink: {link_id}")
+            else:
+                print(f"[SF][WARN] rapport introuvable: {report_path}")
+
+        except SalesforceError as e:
+            print(f"[SF][ERROR] Push WhatsAppNotifications échoué: {e}")
+        except Exception as e:
+            print(f"[SF][ERROR] Exception Push WhatsAppNotifications: {e}")
 
         print(f"[BG] Campagne terminée. OK={summary['total_ok']}, "
               f"Erreur={summary['total_error']}, Coût={summary['total_cost']}")
