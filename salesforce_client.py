@@ -1,6 +1,8 @@
 import os
 import base64
 import requests
+import re
+import unicodedata
 from datetime import datetime
 
 SF_AUTH_URL = "https://login.salesforce.com/services/oauth2/token"
@@ -18,6 +20,35 @@ class SalesforceError(Exception):
     """Exception personnalisée pour les erreurs Salesforce."""
     pass
 
+
+
+def _clean_unicode(s: str) -> str:
+    """Supprime les caractères invisibles/bidi et normalise Unicode."""
+    if s is None:
+        return ""
+    s = unicodedata.normalize("NFC", str(s))
+    s = "".join(ch for ch in s if unicodedata.category(ch) not in ("Cf", "Cc"))
+    return s
+
+def sanitize_filename(name: str, default: str = "document") -> str:
+    """Nettoie un nom de fichier pour éviter les caractères bizarres côté Salesforce."""
+    name = _clean_unicode(name).strip() or default
+    # Remplace les séparateurs/char interdits par '_'
+    name = re.sub(r"[\\/:*?\"<>|]+", "_", name)
+    # espaces multiples -> un seul
+    name = re.sub(r"\s+", " ", name).strip()
+    # évite un nom trop long
+    if len(name) > 120:
+        name = name[:120]
+    return name
+
+def sanitize_title(title: str | None, fallback: str) -> str:
+    t = title if title else fallback
+    t = _clean_unicode(t).strip() or fallback
+    t = t.replace("/", "-")  # évite les slash dans le titre
+    if len(t) > 80:
+        t = t[:80]
+    return t
 
 def get_salesforce_session():
     """
@@ -155,8 +186,8 @@ def create_content_version(session: dict, file_bytes: bytes, filename: str,
 
     payload = {
         "VersionData": version_data_b64,
-        "Title": title or filename.rsplit(".", 1)[0],
-        "PathOnClient": filename,
+        "Title": sanitize_title(title, sanitize_filename(filename).rsplit(".", 1)[0]),
+        "PathOnClient": sanitize_filename(filename)
     }
 
     resp = requests.post(url, headers=headers, json=payload, timeout=20)
@@ -227,12 +258,12 @@ def upload_document_for_case(session: dict, case_id: str, file_bytes: bytes,
     _, content_document_id = create_content_version(session, file_bytes, filename, title=title)
     link_id = link_document_to_case(session, content_document_id, case_id)
     return link_id
+
 # ============================
-#  WhatsAppNotifications__c + Upload générique
+#  WhatsAppNotifications__c
 # ============================
 
 def describe_object(session: dict, sobject_api_name: str) -> dict:
-    """Retourne le describe (métadonnées) d'un objet Salesforce."""
     url = f"{session['instance_url']}/services/data/v59.0/sobjects/{sobject_api_name}/describe"
     resp = requests.get(url, headers=_headers(session), timeout=10)
     try:
@@ -241,45 +272,29 @@ def describe_object(session: dict, sobject_api_name: str) -> dict:
         raise SalesforceError(f"Describe échoué pour {sobject_api_name}: {e} - {resp.text}")
     return resp.json()
 
-
 def link_document_to_entity(session: dict, content_document_id: str, entity_id: str) -> str:
-    """Lie un ContentDocument à n'importe quel enregistrement (Case, WhatsAppNotifications__c, etc.)."""
     url = f"{session['instance_url']}/services/data/v59.0/sobjects/ContentDocumentLink"
     headers = _headers(session)
-
     payload = {
         "ContentDocumentId": content_document_id,
         "LinkedEntityId": entity_id,
         "Visibility": "AllUsers",
     }
-
     resp = requests.post(url, headers=headers, json=payload, timeout=10)
     try:
         resp.raise_for_status()
     except requests.HTTPError as e:
         raise SalesforceError(f"Erreur link_document_to_entity: {e} - {resp.text}")
-
     data = resp.json()
     link_id = data.get("id")
     if not link_id:
         raise SalesforceError(f"Réponse ContentDocumentLink sans id: {data}")
     return link_id
 
-
 def upload_document_for_entity(session: dict, entity_id: str, file_bytes: bytes,
                                filename: str, title: str | None = None) -> str:
-    """
-    Helper complet :
-    - crée un ContentVersion
-    - récupère le ContentDocumentId
-    - crée le ContentDocumentLink vers l'entité (Case, WhatsAppNotifications__c, ...)
-
-    Retourne l'id du ContentDocumentLink créé.
-    """
     _, content_document_id = create_content_version(session, file_bytes, filename, title=title)
-    link_id = link_document_to_entity(session, content_document_id, entity_id)
-    return link_id
-
+    return link_document_to_entity(session, content_document_id, entity_id)
 
 def _pick_existing_field(field_names: set[str], candidates: list[str]) -> str | None:
     for c in candidates:
@@ -287,31 +302,20 @@ def _pick_existing_field(field_names: set[str], candidates: list[str]) -> str | 
             return c
     return None
 
-
 def create_whatsapp_notification_auto(
     session: dict,
     messages_a_envoyer: int,
     messages_envoyes: int,
     messages_echoues: int,
-    date_denvoi_jjmmYYYY: str,  # "jj/mm/yyyy" (comme le doc)
+    date_denvoi_jjmmYYYY: str,
     cout_envoi: float,
 ) -> str:
-    """
-    Crée un enregistrement dans WhatsAppNotifications__c sans connaître à l'avance
-    les API names exacts des champs.
-
-    - Récupère les champs via /describe
-    - Cherche automatiquement les champs (avec ou sans __c)
-    - Gère le champ date: si type 'date'/'datetime' => envoie YYYY-MM-DD
-      sinon conserve jj/mm/yyyy
-    """
     sobject = "WhatsAppNotifications__c"
     desc = describe_object(session, sobject)
     fields = desc.get("fields", [])
     field_names = {f.get("name") for f in fields if f.get("name")}
     field_types = {f.get("name"): f.get("type") for f in fields if f.get("name")}
 
-    # Candidats basés sur ton doc (avec et sans __c)
     f_messages_a = _pick_existing_field(field_names, ["MessagesAenvoyer__c", "MessagesAenvoyer"])
     f_messages_ok = _pick_existing_field(field_names, ["MessagesEnvoyes__c", "MessagesEnvoyes"])
     f_messages_nok = _pick_existing_field(field_names, ["MessagesEchoues__c", "MessagesEchoues"])
@@ -325,12 +329,10 @@ def create_whatsapp_notification_auto(
         ("DateDenvoi", f_date),
         ("CoutEnvoi", f_cost),
     ] if not val]
-
     if missing:
         raise SalesforceError(
             "Champs introuvables via describe pour WhatsAppNotifications__c: "
             + ", ".join(missing)
-            + ". Vérifie l'accès à l'objet/champs ou les API names."
         )
 
     payload = {
@@ -353,7 +355,6 @@ def create_whatsapp_notification_auto(
         resp.raise_for_status()
     except requests.HTTPError as e:
         raise SalesforceError(f"Création {sobject} échouée: {e} - {resp.text}")
-
     data = resp.json()
     rec_id = data.get("id")
     if not rec_id:

@@ -1,6 +1,7 @@
 import os
 import json
 import csv
+import unicodedata
 from datetime import datetime, timedelta
 import threading
 
@@ -26,8 +27,6 @@ from salesforce_client import (
     update_case_status,
     SalesforceError,
     get_case_status,
-    create_whatsapp_notification_auto,
-    upload_document_for_entity,
 )
 from send_campaign import run_campaign, PRICE_CACHE_FILE   # 👈 nouvelle import
 
@@ -65,6 +64,18 @@ AFMA_LOGO_URL = os.getenv("AFMA_LOGO_URL", "https://afma.ma/wp-content/uploads/2
 # phone -> [rows...]
 CLIENT_ROWS_BY_PHONE: dict[str, list[dict]] = {}
 
+def normalize_phone(value: str | None) -> str:
+    """Normalise un numéro en gardant uniquement les chiffres (gère aussi les caractères invisibles)."""
+    if not value:
+        return ""
+    s = str(value)
+    # Supprime les marqueurs invisibles/bidi
+    s = "".join(ch for ch in s if unicodedata.category(ch) not in ("Cf", "Cc"))
+    # Garde uniquement les chiffres
+    digits = "".join(ch for ch in s if ch.isdigit())
+    return digits
+
+
 
 def login_required(f):
     @wraps(f)
@@ -100,7 +111,7 @@ def load_client_db(csv_path: str | None = None):
                     or row.get("Téléphone")
                     or ""
                 )
-                phone = str(phone).strip()
+                phone = normalize_phone(phone)
                 if not phone:
                     continue
 
@@ -187,6 +198,7 @@ def extract_police_from_row(row: dict) -> str | None:
 
     for col in [
         "N° Police",
+        "N¡ Police",  # variante CSV (caractère spécial)
         "Num police",
         "NumPolice",
         "NumeroPolice",
@@ -397,6 +409,26 @@ def download_file(url: str, suggested_filename: str | None = None) -> tuple[byte
         print(f"[DOWNLOAD] Erreur téléchargement fichier {final_url}: {e}")
         return None, ""
 
+
+ACK_DELAY_SECONDS = int(os.getenv("ACK_DELAY_SECONDS", "600"))  # 10 min par défaut
+ACK_TIMERS: dict[str, threading.Timer] = {}
+ACK_LOCK = threading.Lock()
+
+def schedule_ack_message(phone: str):
+    """Planifie l'accusé de réception après un délai; si nouveaux docs arrivent, on repousse."""
+    if not phone:
+        return
+    with ACK_LOCK:
+        old = ACK_TIMERS.get(phone)
+        if old:
+            try:
+                old.cancel()
+            except Exception:
+                pass
+        t = threading.Timer(ACK_DELAY_SECONDS, send_ack_message, args=(phone,))
+        t.daemon = True
+        ACK_TIMERS[phone] = t
+        t.start()
 
 def send_ack_message(phone: str):
     """Envoie un message WhatsApp simple d'accusé de réception."""
@@ -1100,44 +1132,6 @@ def run_campaign_background(csv_path, report_path, csv_name, report_name):
         summary.setdefault("status", "success")
         append_history(summary)
 
-        # =========================
-        #  🆕 Salesforce: WhatsAppNotifications__c + upload rapport CSV
-        # =========================
-        try:
-            sf_session = get_salesforce_session()
-            date_denvoi = datetime.now().strftime("%d/%m/%Y")
-
-            notif_id = create_whatsapp_notification_auto(
-                session=sf_session,
-                messages_a_envoyer=summary.get("total_with_number", 0),
-                messages_envoyes=summary.get("total_ok", 0),
-                messages_echoues=summary.get("total_error", 0),
-                date_denvoi_jjmmYYYY=date_denvoi,
-                cout_envoi=summary.get("total_cost", 0.0),
-            )
-            print(f"[SF] WhatsAppNotifications__c créé: {notif_id}")
-
-            # Attacher le rapport CSV généré à l'enregistrement WhatsAppNotifications__c
-            if os.path.exists(report_path):
-                with open(report_path, "rb") as f:
-                    file_bytes = f.read()
-
-                link_id = upload_document_for_entity(
-                    session=sf_session,
-                    entity_id=notif_id,
-                    file_bytes=file_bytes,
-                    filename=report_name,
-                    title=f"Rapport campagne - {date_denvoi}",
-                )
-                print(f"[SF] Rapport lié via ContentDocumentLink: {link_id}")
-            else:
-                print(f"[SF][WARN] rapport introuvable: {report_path}")
-
-        except SalesforceError as e:
-            print(f"[SF][ERROR] Push WhatsAppNotifications échoué: {e}")
-        except Exception as e:
-            print(f"[SF][ERROR] Exception Push WhatsAppNotifications: {e}")
-
         print(f"[BG] Campagne terminée. OK={summary['total_ok']}, "
               f"Erreur={summary['total_error']}, Coût={summary['total_cost']}")
     except Exception as e:
@@ -1301,7 +1295,7 @@ def infobip_webhook():
             continue
 
 
-        phone = msg.get("from") or msg.get("sender")
+        phone = normalize_phone(msg.get("from") or msg.get("sender"))
         received_at = msg.get("receivedAt")
         contact = msg.get("contact", {}) or {}
         contact_name = contact.get("name")
@@ -1419,7 +1413,7 @@ def infobip_webhook():
                         )
 
                     # Accusé de réception après upload OK
-                    send_ack_message(phone)
+                    schedule_ack_message(phone)
                 else:
                     print(
                         f"[SF] Aucun fichier téléchargé pour {doc_url}, "
