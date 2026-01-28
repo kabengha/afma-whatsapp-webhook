@@ -35,6 +35,51 @@ from send_campaign import run_campaign, PRICE_CACHE_FILE   # 👈 nouvelle impor
 
 app = Flask(__name__)
 
+
+# ============================
+#  Filtre Salesforce (numéros autorisés)
+# ============================
+KNOWN_PHONES_FILE = os.getenv("KNOWN_PHONES_FILE", "known_campaign_phones.json")
+
+KNOWN_CAMPAIGN_PHONES: set[str] = set()
+
+def _load_known_phones():
+    global KNOWN_CAMPAIGN_PHONES
+    if not os.path.exists(KNOWN_PHONES_FILE):
+        KNOWN_CAMPAIGN_PHONES = set()
+        return
+    try:
+        with open(KNOWN_PHONES_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f) or []
+        KNOWN_CAMPAIGN_PHONES = set(data)
+        print(f"[KNOWN_PHONES] Loaded {len(KNOWN_CAMPAIGN_PHONES)} phones")
+    except Exception as e:
+        print(f"[KNOWN_PHONES][WARN] Cannot load: {e}")
+        KNOWN_CAMPAIGN_PHONES = set()
+
+def _save_known_phones():
+    try:
+        with open(KNOWN_PHONES_FILE, "w", encoding="utf-8") as f:
+            json.dump(sorted(list(KNOWN_CAMPAIGN_PHONES)), f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"[KNOWN_PHONES][WARN] Cannot save: {e}")
+
+def add_phones_from_current_loaded_csv():
+    """
+    Ajoute dans la liste blanche tous les numéros présents dans CLIENT_ROWS_BY_PHONE
+    (donc campagne actuelle), pour autoriser aussi les anciennes campagnes.
+    """
+    before = len(KNOWN_CAMPAIGN_PHONES)
+    KNOWN_CAMPAIGN_PHONES.update(CLIENT_ROWS_BY_PHONE.keys())
+    after = len(KNOWN_CAMPAIGN_PHONES)
+    if after != before:
+        _save_known_phones()
+    print(f"[KNOWN_PHONES] Updated: {before} -> {after}")
+
+def is_phone_allowed_for_salesforce(phone: str) -> bool:
+    return phone in KNOWN_CAMPAIGN_PHONES
+
+
 # ============================
 #  Config login / interface
 # ============================
@@ -1218,6 +1263,8 @@ def run_campaign_route():
 
     # 🔄 Met à jour la base en mémoire pour le webhook
     load_client_db(csv_path)
+    add_phones_from_current_loaded_csv()
+
 
     report_name = f"rapport_{timestamp_str}.csv"
     report_path = os.path.join(REPORT_DIR, report_name)
@@ -1397,6 +1444,10 @@ def infobip_webhook():
         active_window = has_active_window(phone, received_at)
         print(f"[WINDOW] Conversation active (<2h) pour {phone} ? {active_window}")
         print("------------------------")
+        # ✅ Filtre: on traite uniquement les numéros qui ont déjà fait partie d'une campagne
+        if not is_phone_allowed_for_salesforce(phone):
+            print(f"[FILTER][SKIP] phone={phone} -> numéro jamais ciblé par une campagne, ignore Salesforce.")
+            continue
 
         #  Stockage mémoire
         store_in_memory(
@@ -1479,6 +1530,8 @@ def infobip_webhook():
 # ============================
 
 load_client_db()
+_load_known_phones()
+
 
 if __name__ == "__main__":
     load_client_db()
